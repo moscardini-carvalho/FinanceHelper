@@ -104,7 +104,7 @@ const mensagemFormulario = document.querySelector("#mensagem-formulario");
 const listaMovimentacoes = document.querySelector("#lista-movimentacoes");
 const notaDemonstracao = document.querySelector(".demo-note");
 
-const movimentacoes = [];
+const movimentacoes = carregarMovimentacoes();
 
 function formatarValor(valor) {
     return valor.toLocaleString("pt-BR", {
@@ -209,6 +209,16 @@ if (formularioCadastro) {
 
         movimentacoes.push(resultado.movimentacao);
 
+        const salvou = salvarMovimentacoes(movimentacoes);
+
+        if (!salvou) {
+            movimentacoes.pop();
+
+            mensagemFormulario.textContent =
+                "Não foi possível salvar a movimentação. Tente novamente.";
+            return;
+        }
+
         exibirMovimentacoes();
 
         mensagemFormulario.textContent = "Movimentação cadastrada com sucesso!";
@@ -228,3 +238,4 @@ if (formularioCadastro) {
     });
 }
 
+exibirMovimentacoes();
