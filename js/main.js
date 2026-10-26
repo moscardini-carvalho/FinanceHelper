@@ -53,3 +53,46 @@ window.addEventListener("resize", () => {
 
 atualizarData();
 console.info("Meu Financeiro: interface inicial carregada.");
+
+
+/* Comportamentos do formulário de movimentações */
+
+const botaoNovaMovimentacao = document.querySelector("#nova-movimentacao");
+const formularioMovimentacao = document.querySelector("#formulario-movimentacao");
+const botaoCancelarMovimentacao = document.querySelector("#cancelar-movimentacao");
+const campoData = document.querySelector('#form-movimentacao [name="data"]');
+
+function abrirFormulario() {
+    if (!formularioMovimentacao) return;
+
+    formularioMovimentacao.hidden = false;
+
+    if (campoData && !campoData.value) {
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+        const dia = String(hoje.getDate()).padStart(2, "0");
+
+        campoData.value = `${ano}-${mes}-${dia}`;
+    }
+
+    formularioMovimentacao.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+function fecharFormulario() {
+    if (!formularioMovimentacao) return;
+
+    formularioMovimentacao.hidden = true;
+}
+
+if (botaoNovaMovimentacao) {
+    botaoNovaMovimentacao.addEventListener("click", abrirFormulario);
+}
+
+if (botaoCancelarMovimentacao) {
+    botaoCancelarMovimentacao.addEventListener("click", fecharFormulario);
+}
+

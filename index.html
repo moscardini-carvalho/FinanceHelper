@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="js/main.js" defer></script>
 </head>
+
 <body>
     <div class="app-shell">
         <aside class="sidebar" id="sidebar">
@@ -21,14 +23,20 @@
                 <a class="nav-link active" href="#visao-geral" aria-current="page">
                     <span class="nav-icon" aria-hidden="true">▦</span><span>Visão geral</span>
                 </a>
-                <a class="nav-link disabled-link" href="#movimentacoes" aria-disabled="true" title="Disponível em uma etapa futura">
-                    <span class="nav-icon" aria-hidden="true">↕</span><span>Movimentações</span><span class="soon">Em breve</span>
+                <a class="nav-link disabled-link" href="#movimentacoes" aria-disabled="true"
+                    title="Disponível em uma etapa futura">
+                    <span class="nav-icon" aria-hidden="true">↕</span><span>Movimentações</span><span class="soon">Em
+                        breve</span>
                 </a>
-                <a class="nav-link disabled-link" href="#relatorios" aria-disabled="true" title="Disponível em uma etapa futura">
-                    <span class="nav-icon" aria-hidden="true">▥</span><span>Relatórios</span><span class="soon">Em breve</span>
+                <a class="nav-link disabled-link" href="#relatorios" aria-disabled="true"
+                    title="Disponível em uma etapa futura">
+                    <span class="nav-icon" aria-hidden="true">▥</span><span>Relatórios</span><span class="soon">Em
+                        breve</span>
                 </a>
-                <a class="nav-link disabled-link" href="#contas" aria-disabled="true" title="Disponível em uma etapa futura">
-                    <span class="nav-icon" aria-hidden="true">▣</span><span>Contas e cartões</span><span class="soon">Em breve</span>
+                <a class="nav-link disabled-link" href="#contas" aria-disabled="true"
+                    title="Disponível em uma etapa futura">
+                    <span class="nav-icon" aria-hidden="true">▣</span><span>Contas e cartões</span><span class="soon">Em
+                        breve</span>
                 </a>
             </nav>
 
@@ -36,7 +44,8 @@
                 <div class="tip-card">
                     <span class="tip-icon" aria-hidden="true">✦</span>
                     <p class="tip-title">Seu dinheiro, mais claro.</p>
-                    <p class="tip-copy">Em breve você poderá registrar suas movimentações e entender para onde seu dinheiro vai.</p>
+                    <p class="tip-copy">Em breve você poderá registrar suas movimentações e entender para onde seu
+                        dinheiro vai.</p>
                 </div>
                 <div class="profile">
                     <div class="avatar" aria-hidden="true">JP</div>
@@ -48,13 +57,16 @@
 
         <main class="main-content" id="visao-geral">
             <header class="topbar">
-                <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="sidebar">
+                <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"
+                    aria-controls="sidebar">
                     <span></span><span></span><span></span>
                 </button>
-                <div class="breadcrumb"><span>Meu espaço</span><span class="crumb-separator">/</span><strong>Visão geral</strong></div>
+                <div class="breadcrumb"><span>Meu espaço</span><span class="crumb-separator">/</span><strong>Visão
+                        geral</strong></div>
                 <div class="topbar-right">
                     <span class="demo-pill"><span></span> Prévia demonstrativa</span>
-                    <button class="icon-button" type="button" aria-label="Notificações" title="Notificações ainda não disponíveis">♧</button>
+                    <button class="icon-button" type="button" aria-label="Notificações"
+                        title="Notificações ainda não disponíveis">♧</button>
                 </div>
             </header>
 
@@ -64,95 +76,243 @@
                     <h1>Visão geral<span class="heading-dot">.</span></h1>
                     <p class="page-subtitle">Uma visão mais simples das suas finanças começa aqui.</p>
                 </div>
-                <button class="primary-button" type="button" disabled title="Cadastro de movimentações será implementado em uma issue futura">
-                    <span aria-hidden="true">＋</span> Nova movimentação
+                <button class="primary-button" id="nova-movimentacao" type="button">
+                    <span aria-hidden="true">+</span> Nova movimentação
                 </button>
             </section>
 
+
+            <section class="panel form-panel" id="formulario-movimentacao" hidden aria-labelledby="formulario-titulo">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-kicker">NOVA ENTRADA</p>
+                        <h2 id="formulario-titulo">Cadastrar movimentação</h2>
+                    </div>
+                    <button class="text-button" id="cancelar-movimentacao" type="button">
+                        Cancelar
+                    </button>
+                </div>
+
+                <form id="form-movimentacao">
+                    <div class="form-grid">
+                        <label class="form-field">
+                            Descrição
+                            <input type="text" name="descricao" required maxlength="100"
+                                placeholder="Ex.: Salário ou Mercado">
+                        </label>
+
+                        <label class="form-field">
+                            Tipo
+                            <select name="tipo" required>
+                                <option value="despesa">Despesa</option>
+                                <option value="receita">Receita</option>
+                            </select>
+                        </label>
+
+                        <label class="form-field">
+                            Valor (R$)
+                            <input type="number" name="valor" required min="0.01" step="0.01" placeholder="0,00">
+                        </label>
+
+                        <label class="form-field">
+                            Categoria
+                            <input type="text" name="categoria" required maxlength="50" placeholder="Ex.: Alimentação">
+                        </label>
+
+                        <label class="form-field">
+                            Data
+                            <input type="date" name="data" required>
+                        </label>
+
+                        <label class="form-field">
+                            Forma de pagamento
+                            <select name="formaPagamento" required>
+                                <option value="">Selecione</option>
+                                <option value="Pix">Pix</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Cartão">Cartão</option>
+                                <option value="Conta bancária">Conta bancária</option>
+                                <option value="Boleto">Boleto</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <p id="mensagem-formulario" role="status" aria-live="polite"></p>
+
+                    <div class="form-actions">
+                        <button class="primary-button" type="submit">
+                            Salvar movimentação
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+
             <section class="summary-grid" aria-label="Resumo financeiro demonstrativo">
                 <article class="summary-card balance-card">
-                    <div class="card-topline"><span class="card-label">Saldo do período</span><span class="metric-icon purple" aria-hidden="true">◈</span></div>
+                    <div class="card-topline"><span class="card-label">Saldo do período</span><span
+                            class="metric-icon purple" aria-hidden="true">◈</span></div>
                     <p class="metric-value">R$ 2.100,00</p>
-                    <div class="metric-foot"><span class="trend positive">↗ 12,8%</span><span>vs. mês anterior</span></div>
+                    <div class="metric-foot"><span class="trend positive">↗ 12,8%</span><span>vs. mês anterior</span>
+                    </div>
                     <div class="card-decoration" aria-hidden="true"></div>
                 </article>
                 <article class="summary-card">
-                    <div class="card-topline"><span class="card-label">Receitas do mês</span><span class="metric-icon green" aria-hidden="true">↙</span></div>
+                    <div class="card-topline"><span class="card-label">Receitas do mês</span><span
+                            class="metric-icon green" aria-hidden="true">↙</span></div>
                     <p class="metric-value">R$ 2.800,00</p>
                     <div class="metric-foot"><span class="metric-note">2 entradas</span><span>neste mês</span></div>
-                    <div class="mini-bars income-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                    <div class="mini-bars income-bars" aria-hidden="true">
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                    </div>
                 </article>
                 <article class="summary-card">
-                    <div class="card-topline"><span class="card-label">Despesas do mês</span><span class="metric-icon orange" aria-hidden="true">↗</span></div>
+                    <div class="card-topline"><span class="card-label">Despesas do mês</span><span
+                            class="metric-icon orange" aria-hidden="true">↗</span></div>
                     <p class="metric-value">R$ 700,00</p>
-                    <div class="metric-foot"><span class="metric-note">5 movimentações</span><span>neste mês</span></div>
-                    <div class="mini-bars expense-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                    <div class="metric-foot"><span class="metric-note">5 movimentações</span><span>neste mês</span>
+                    </div>
+                    <div class="mini-bars expense-bars" aria-hidden="true">
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                    </div>
                 </article>
             </section>
 
             <section class="analytics-grid" aria-label="Análises demonstrativas">
                 <article class="panel spending-panel">
                     <div class="panel-header">
-                        <div><p class="panel-kicker">ANÁLISE DE DESPESAS</p><h2>Para onde vai seu dinheiro?</h2></div>
+                        <div>
+                            <p class="panel-kicker">ANÁLISE DE DESPESAS</p>
+                            <h2>Para onde vai seu dinheiro?</h2>
+                        </div>
                         <span class="period-select">Este mês <span aria-hidden="true">⌄</span></span>
                     </div>
                     <div class="spending-content">
                         <div class="donut-wrap">
-                            <div class="donut-chart" role="img" aria-label="Gráfico demonstrativo: alimentação 64%, transporte 21%, assinaturas 15%">
+                            <div class="donut-chart" role="img"
+                                aria-label="Gráfico demonstrativo: alimentação 64%, transporte 21%, assinaturas 15%">
                                 <div class="donut-center"><span>Total gasto</span><strong>R$ 700</strong></div>
                             </div>
                         </div>
                         <div class="legend-list">
-                            <div class="legend-item"><span class="legend-dot dot-blue"></span><span class="legend-name">Alimentação</span><strong>R$ 450</strong><small>64%</small></div>
-                            <div class="legend-item"><span class="legend-dot dot-violet"></span><span class="legend-name">Transporte</span><strong>R$ 150</strong><small>21%</small></div>
-                            <div class="legend-item"><span class="legend-dot dot-orange"></span><span class="legend-name">Assinaturas</span><strong>R$ 100</strong><small>15%</small></div>
+                            <div class="legend-item"><span class="legend-dot dot-blue"></span><span
+                                    class="legend-name">Alimentação</span><strong>R$ 450</strong><small>64%</small>
+                            </div>
+                            <div class="legend-item"><span class="legend-dot dot-violet"></span><span
+                                    class="legend-name">Transporte</span><strong>R$ 150</strong><small>21%</small></div>
+                            <div class="legend-item"><span class="legend-dot dot-orange"></span><span
+                                    class="legend-name">Assinaturas</span><strong>R$ 100</strong><small>15%</small>
+                            </div>
                         </div>
                     </div>
-                    <p class="demo-note"><span aria-hidden="true">ⓘ</span> Valores ilustrativos, não são dados salvos.</p>
+                    <p class="demo-note"><span aria-hidden="true">ⓘ</span> Valores ilustrativos, não são dados salvos.
+                    </p>
                 </article>
 
                 <article class="panel cashflow-panel">
                     <div class="panel-header">
-                        <div><p class="panel-kicker">VISÃO MENSAL</p><h2>Receitas x despesas</h2></div>
-                        <span class="chart-legend"><i class="legend-dot dot-blue"></i> Receitas <i class="legend-dot dot-orange"></i> Despesas</span>
+                        <div>
+                            <p class="panel-kicker">VISÃO MENSAL</p>
+                            <h2>Receitas x despesas</h2>
+                        </div>
+                        <span class="chart-legend"><i class="legend-dot dot-blue"></i> Receitas <i
+                                class="legend-dot dot-orange"></i> Despesas</span>
                     </div>
-                    <div class="bar-chart" role="img" aria-label="Gráfico demonstrativo comparando receitas e despesas de janeiro a junho">
-                        <div class="chart-y-labels"><span>3 mil</span><span>2 mil</span><span>1 mil</span><span>0</span></div>
+                    <div class="bar-chart" role="img"
+                        aria-label="Gráfico demonstrativo comparando receitas e despesas de janeiro a junho">
+                        <div class="chart-y-labels"><span>3 mil</span><span>2 mil</span><span>1 mil</span><span>0</span>
+                        </div>
                         <div class="chart-plot">
                             <div class="grid-lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-                            <div class="bar-group"><div class="bar-pair"><i class="bar income" style="height:42%"></i><i class="bar expense" style="height:18%"></i></div><span>Jan</span></div>
-                            <div class="bar-group"><div class="bar-pair"><i class="bar income" style="height:55%"></i><i class="bar expense" style="height:24%"></i></div><span>Fev</span></div>
-                            <div class="bar-group"><div class="bar-pair"><i class="bar income" style="height:48%"></i><i class="bar expense" style="height:28%"></i></div><span>Mar</span></div>
-                            <div class="bar-group"><div class="bar-pair"><i class="bar income" style="height:70%"></i><i class="bar expense" style="height:32%"></i></div><span>Abr</span></div>
-                            <div class="bar-group"><div class="bar-pair"><i class="bar income" style="height:61%"></i><i class="bar expense" style="height:25%"></i></div><span>Mai</span></div>
-                            <div class="bar-group"><div class="bar-pair"><i class="bar income" style="height:82%"></i><i class="bar expense" style="height:38%"></i></div><span>Jun</span></div>
+                            <div class="bar-group">
+                                <div class="bar-pair"><i class="bar income" style="height:42%"></i><i
+                                        class="bar expense" style="height:18%"></i></div><span>Jan</span>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-pair"><i class="bar income" style="height:55%"></i><i
+                                        class="bar expense" style="height:24%"></i></div><span>Fev</span>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-pair"><i class="bar income" style="height:48%"></i><i
+                                        class="bar expense" style="height:28%"></i></div><span>Mar</span>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-pair"><i class="bar income" style="height:70%"></i><i
+                                        class="bar expense" style="height:32%"></i></div><span>Abr</span>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-pair"><i class="bar income" style="height:61%"></i><i
+                                        class="bar expense" style="height:25%"></i></div><span>Mai</span>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar-pair"><i class="bar income" style="height:82%"></i><i
+                                        class="bar expense" style="height:38%"></i></div><span>Jun</span>
+                            </div>
                         </div>
                     </div>
-                    <p class="demo-note"><span aria-hidden="true">ⓘ</span> Gráfico ilustrativo para validar o layout.</p>
+                    <p class="demo-note"><span aria-hidden="true">ⓘ</span> Gráfico ilustrativo para validar o layout.
+                    </p>
                 </article>
             </section>
 
             <section class="panel transactions-panel" aria-labelledby="transactions-title">
                 <div class="panel-header">
-                    <div><p class="panel-kicker">ATIVIDADE RECENTE</p><h2 id="transactions-title">Movimentações recentes</h2></div>
-                    <button class="text-button" type="button" disabled>Ver todas <span aria-hidden="true">→</span></button>
+                    <div>
+                        <p class="panel-kicker">ATIVIDADE RECENTE</p>
+                        <h2 id="transactions-title">Movimentações recentes</h2>
+                    </div>
+                    <button class="text-button" type="button" disabled>Ver todas <span
+                            aria-hidden="true">→</span></button>
                 </div>
                 <div class="table-wrap">
                     <table>
-                        <thead><tr><th>Descrição</th><th>Categoria</th><th>Data</th><th>Forma</th><th class="amount-heading">Valor</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Categoria</th>
+                                <th>Data</th>
+                                <th>Forma</th>
+                                <th class="amount-heading">Valor</th>
+                            </tr>
+                        </thead>
                         <tbody>
-                            <tr><td><span class="transaction-symbol food">⌁</span><span class="transaction-title">Mercado e almoço</span></td><td><span class="category-tag">Alimentação</span></td><td>24 out, 2026</td><td>Pix</td><td class="amount negative">− R$ 85,00</td></tr>
-                            <tr><td><span class="transaction-symbol salary">↙</span><span class="transaction-title">Salário</span></td><td><span class="category-tag">Renda</span></td><td>20 out, 2026</td><td>Conta bancária</td><td class="amount positive-text">+ R$ 2.500,00</td></tr>
-                            <tr><td><span class="transaction-symbol transport">↗</span><span class="transaction-title">Transporte</span></td><td><span class="category-tag">Transporte</span></td><td>18 out, 2026</td><td>Cartão</td><td class="amount negative">− R$ 45,00</td></tr>
+                            <tr>
+                                <td><span class="transaction-symbol food">⌁</span><span
+                                        class="transaction-title">Mercado e almoço</span></td>
+                                <td><span class="category-tag">Alimentação</span></td>
+                                <td>24 out, 2026</td>
+                                <td>Pix</td>
+                                <td class="amount negative">− R$ 85,00</td>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-symbol salary">↙</span><span
+                                        class="transaction-title">Salário</span></td>
+                                <td><span class="category-tag">Renda</span></td>
+                                <td>20 out, 2026</td>
+                                <td>Conta bancária</td>
+                                <td class="amount positive-text">+ R$ 2.500,00</td>
+                            </tr>
+                            <tr>
+                                <td><span class="transaction-symbol transport">↗</span><span
+                                        class="transaction-title">Transporte</span></td>
+                                <td><span class="category-tag">Transporte</span></td>
+                                <td>18 out, 2026</td>
+                                <td>Cartão</td>
+                                <td class="amount negative">− R$ 45,00</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-                <p class="demo-note"><span aria-hidden="true">ⓘ</span> Todas as movimentações exibidas são exemplos fictícios.</p>
+                <p class="demo-note"><span aria-hidden="true">ⓘ</span> Todas as movimentações exibidas são exemplos
+                    fictícios.</p>
             </section>
 
-            <footer class="page-footer"><span>Meu Financeiro <span class="footer-dot">•</span> Projeto em desenvolvimento</span><span>Seus dados financeiros ainda não são armazenados.</span></footer>
+            <footer class="page-footer"><span>Meu Financeiro <span class="footer-dot">•</span> Projeto em
+                    desenvolvimento</span><span>Seus dados financeiros ainda não são armazenados.</span></footer>
         </main>
     </div>
     <div class="mobile-overlay" id="mobile-overlay" hidden></div>
 </body>
+
 </html>
