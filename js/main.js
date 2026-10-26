@@ -170,8 +170,20 @@ function exibirMovimentacoes() {
                 `${sinal} ${formatarValor(movimentacao.valor)}`;
 
 
+
             const celulaAcoes = document.createElement("td");
 
+            // Botão Editar
+            const botaoEditar = document.createElement("button");
+            botaoEditar.type = "button";
+            botaoEditar.className = "text-button";
+            botaoEditar.textContent = "Editar";
+            botaoEditar.setAttribute(
+                "aria-label",
+                `Editar movimentação ${movimentacao.descricao}`
+            );
+
+            // Botão Excluir
             const botaoExcluir = document.createElement("button");
             botaoExcluir.type = "button";
             botaoExcluir.className = "text-button";
@@ -185,7 +197,8 @@ function exibirMovimentacoes() {
                 excluirMovimentacao(movimentacao.id);
             });
 
-            celulaAcoes.appendChild(botaoExcluir);
+            celulaAcoes.append(botaoEditar, botaoExcluir);
+
 
             linha.append(
                 celulaDescricao,
