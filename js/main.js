@@ -96,3 +96,135 @@ if (botaoCancelarMovimentacao) {
     botaoCancelarMovimentacao.addEventListener("click", fecharFormulario);
 }
 
+
+/* Cadastro e exibição de movimentações */
+
+const formularioCadastro = document.querySelector("#form-movimentacao");
+const mensagemFormulario = document.querySelector("#mensagem-formulario");
+const listaMovimentacoes = document.querySelector("#lista-movimentacoes");
+const notaDemonstracao = document.querySelector(".demo-note");
+
+const movimentacoes = [];
+
+function formatarValor(valor) {
+    return valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+function formatarData(data) {
+    const [ano, mes, dia] = data.split("-").map(Number);
+
+    return new Date(ano, mes - 1, dia).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function exibirMovimentacoes() {
+    if (!listaMovimentacoes) return;
+
+    listaMovimentacoes.replaceChildren();
+
+    movimentacoes
+        .slice()
+        .sort((a, b) => b.data.localeCompare(a.data))
+        .forEach((movimentacao) => {
+            const linha = document.createElement("tr");
+
+            const celulaDescricao = document.createElement("td");
+            const simbolo = document.createElement("span");
+            const titulo = document.createElement("span");
+
+            simbolo.className = `transaction-symbol ${movimentacao.tipo === "receita" ? "salary" : "food"
+                }`;
+            simbolo.textContent =
+                movimentacao.tipo === "receita" ? "↙" : "⌁";
+
+            titulo.className = "transaction-title";
+            titulo.textContent = movimentacao.descricao;
+
+            celulaDescricao.append(simbolo, titulo);
+
+            const celulaCategoria = document.createElement("td");
+            const categoria = document.createElement("span");
+            categoria.className = "category-tag";
+            categoria.textContent = movimentacao.categoria;
+            celulaCategoria.appendChild(categoria);
+
+            const celulaData = document.createElement("td");
+            celulaData.textContent = formatarData(movimentacao.data);
+
+            const celulaForma = document.createElement("td");
+            celulaForma.textContent = movimentacao.formaPagamento;
+
+            const celulaValor = document.createElement("td");
+            celulaValor.className = movimentacao.tipo === "receita"
+                ? "amount positive-text"
+                : "amount negative";
+
+            const sinal = movimentacao.tipo === "receita" ? "+" : "−";
+            celulaValor.textContent =
+                `${sinal} ${formatarValor(movimentacao.valor)}`;
+
+            linha.append(
+                celulaDescricao,
+                celulaCategoria,
+                celulaData,
+                celulaForma,
+                celulaValor
+            );
+
+            listaMovimentacoes.appendChild(linha);
+        });
+
+    if (notaDemonstracao) {
+        notaDemonstracao.hidden = true;
+    }
+}
+
+if (formularioCadastro) {
+    formularioCadastro.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+
+        const campos = new FormData(formularioCadastro);
+
+        const dados = {
+            descricao: campos.get("descricao"),
+            tipo: campos.get("tipo"),
+            valor: Number(campos.get("valor")),
+            categoria: campos.get("categoria"),
+            data: campos.get("data"),
+            formaPagamento: campos.get("formaPagamento")
+        };
+
+        const resultado = criarMovimentacao(dados);
+
+        if (!resultado.sucesso) {
+            mensagemFormulario.textContent = resultado.erros.join(" ");
+            return;
+        }
+
+        movimentacoes.push(resultado.movimentacao);
+
+        exibirMovimentacoes();
+
+        mensagemFormulario.textContent = "Movimentação cadastrada com sucesso!";
+
+        formularioCadastro.reset();
+
+        if (campoData) {
+            const hoje = new Date();
+            const ano = hoje.getFullYear();
+            const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+            const dia = String(hoje.getDate()).padStart(2, "0");
+
+            campoData.value = `${ano}-${mes}-${dia}`;
+        }
+
+        formularioMovimentacao.hidden = true;
+    });
+}
+

@@ -7,6 +7,7 @@
     <meta name="description" content="Dashboard pessoal para acompanhar receitas, despesas e hábitos financeiros.">
     <title>Meu Financeiro | Visão geral</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/services/movimentacoes.js" defer></script>
     <script src="js/main.js" defer></script>
 </head>
 
@@ -276,7 +277,7 @@
                                 <th class="amount-heading">Valor</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="lista-movimentacoes">
                             <tr>
                                 <td><span class="transaction-symbol food">⌁</span><span
                                         class="transaction-title">Mercado e almoço</span></td>
