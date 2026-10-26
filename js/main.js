@@ -169,15 +169,35 @@ function exibirMovimentacoes() {
             celulaValor.textContent =
                 `${sinal} ${formatarValor(movimentacao.valor)}`;
 
+
+            const celulaAcoes = document.createElement("td");
+
+            const botaoExcluir = document.createElement("button");
+            botaoExcluir.type = "button";
+            botaoExcluir.className = "text-button";
+            botaoExcluir.textContent = "Excluir";
+            botaoExcluir.setAttribute(
+                "aria-label",
+                `Excluir movimentação ${movimentacao.descricao}`
+            );
+
+            botaoExcluir.addEventListener("click", () => {
+                excluirMovimentacao(movimentacao.id);
+            });
+
+            celulaAcoes.appendChild(botaoExcluir);
+
             linha.append(
                 celulaDescricao,
                 celulaCategoria,
                 celulaData,
                 celulaForma,
-                celulaValor
+                celulaValor,
+                celulaAcoes
             );
 
             listaMovimentacoes.appendChild(linha);
+
         });
 
     if (notaDemonstracao) {
@@ -304,6 +324,45 @@ function atualizarResumoFinanceiro() {
             `${despesasDoMes.length} ${despesasDoMes.length === 1 ? "movimentação" : "movimentações"}`;
     }
 }
+
+
+function excluirMovimentacao(id) {
+    const indice = movimentacoes.findIndex(
+        (movimentacao) => movimentacao.id === id
+    );
+
+    if (indice === -1) {
+        return;
+    }
+
+    const movimentacaoRemovida = movimentacoes[indice];
+
+    const confirmar = window.confirm(
+        `Deseja excluir a movimentação "${movimentacaoRemovida.descricao}"?`
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    movimentacoes.splice(indice, 1);
+
+    const salvou = salvarMovimentacoes(movimentacoes);
+
+    if (!salvou) {
+        movimentacoes.splice(indice, 0, movimentacaoRemovida);
+
+        alert(
+            "Não foi possível excluir a movimentação. Tente novamente."
+        );
+
+        return;
+    }
+
+    exibirMovimentacoes();
+    atualizarResumoFinanceiro();
+}
+
 
 atualizarResumoFinanceiro();
 exibirMovimentacoes();
