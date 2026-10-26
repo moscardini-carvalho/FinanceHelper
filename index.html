@@ -151,35 +151,53 @@
             </section>
 
 
-            <section class="summary-grid" aria-label="Resumo financeiro demonstrativo">
+
+            <section class="summary-grid" aria-label="Resumo financeiro">
                 <article class="summary-card balance-card">
-                    <div class="card-topline"><span class="card-label">Saldo do período</span><span
-                            class="metric-icon purple" aria-hidden="true">◈</span></div>
-                    <p class="metric-value">R$ 2.100,00</p>
-                    <div class="metric-foot"><span class="trend positive">↗ 12,8%</span><span>vs. mês anterior</span>
+                    <div class="card-topline">
+                        <span class="card-label">Saldo total</span>
+                        <span class="metric-icon purple" aria-hidden="true">◈</span>
+                    </div>
+                    <p class="metric-value" id="saldo-total">R$ 0,00</p>
+                    <div class="metric-foot">
+                        <span class="metric-note" id="saldo-descricao">Saldo acumulado</span>
                     </div>
                     <div class="card-decoration" aria-hidden="true"></div>
                 </article>
+
                 <article class="summary-card">
-                    <div class="card-topline"><span class="card-label">Receitas do mês</span><span
-                            class="metric-icon green" aria-hidden="true">↙</span></div>
-                    <p class="metric-value">R$ 2.800,00</p>
-                    <div class="metric-foot"><span class="metric-note">2 entradas</span><span>neste mês</span></div>
+                    <div class="card-topline">
+                        <span class="card-label">Receitas do mês</span>
+                        <span class="metric-icon green" aria-hidden="true">↙</span>
+                    </div>
+                    <p class="metric-value" id="total-receitas">R$ 0,00</p>
+                    <div class="metric-foot">
+                        <span class="metric-note" id="quantidade-receitas">0 entradas</span>
+                        <span>neste mês</span>
+                    </div>
                     <div class="mini-bars income-bars" aria-hidden="true">
-                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i>
                     </div>
                 </article>
+
                 <article class="summary-card">
-                    <div class="card-topline"><span class="card-label">Despesas do mês</span><span
-                            class="metric-icon orange" aria-hidden="true">↗</span></div>
-                    <p class="metric-value">R$ 700,00</p>
-                    <div class="metric-foot"><span class="metric-note">5 movimentações</span><span>neste mês</span>
+                    <div class="card-topline">
+                        <span class="card-label">Despesas do mês</span>
+                        <span class="metric-icon orange" aria-hidden="true">↗</span>
+                    </div>
+                    <p class="metric-value" id="total-despesas">R$ 0,00</p>
+                    <div class="metric-foot">
+                        <span class="metric-note" id="quantidade-despesas">0 movimentações</span>
+                        <span>neste mês</span>
                     </div>
                     <div class="mini-bars expense-bars" aria-hidden="true">
-                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i>
+                        <i></i><i></i><i></i><i></i>
                     </div>
                 </article>
             </section>
+
 
             <section class="analytics-grid" aria-label="Análises demonstrativas">
                 <article class="panel spending-panel">

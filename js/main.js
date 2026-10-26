@@ -220,6 +220,7 @@ if (formularioCadastro) {
         }
 
         exibirMovimentacoes();
+        atualizarResumoFinanceiro();
 
         mensagemFormulario.textContent = "Movimentação cadastrada com sucesso!";
 
@@ -238,4 +239,71 @@ if (formularioCadastro) {
     });
 }
 
+
+function atualizarResumoFinanceiro() {
+    const elementoSaldo = document.querySelector("#saldo-total");
+    const elementoReceitas = document.querySelector("#total-receitas");
+    const elementoDespesas = document.querySelector("#total-despesas");
+    const elementoQuantidadeReceitas = document.querySelector("#quantidade-receitas");
+    const elementoQuantidadeDespesas = document.querySelector("#quantidade-despesas");
+
+    const agora = new Date();
+    const anoAtual = agora.getFullYear();
+    const mesAtual = agora.getMonth();
+
+    const receitas = movimentacoes.filter((movimentacao) =>
+        movimentacao.tipo === "receita"
+    );
+
+    const despesas = movimentacoes.filter((movimentacao) =>
+        movimentacao.tipo === "despesa"
+    );
+
+    const movimentacoesDoMes = movimentacoes.filter((movimentacao) => {
+        const [ano, mes] = movimentacao.data.split("-").map(Number);
+
+        return ano === anoAtual && mes === mesAtual + 1;
+    });
+
+    const receitasDoMes = movimentacoesDoMes.filter((movimentacao) =>
+        movimentacao.tipo === "receita"
+    );
+
+    const despesasDoMes = movimentacoesDoMes.filter((movimentacao) =>
+        movimentacao.tipo === "despesa"
+    );
+
+    const somar = (lista) => lista.reduce(
+        (total, movimentacao) => total + movimentacao.valor,
+        0
+    );
+
+    const saldo = somar(receitas) - somar(despesas);
+    const totalReceitas = somar(receitasDoMes);
+    const totalDespesas = somar(despesasDoMes);
+
+    if (elementoSaldo) {
+        elementoSaldo.textContent = formatarValor(saldo);
+    }
+
+    if (elementoReceitas) {
+        elementoReceitas.textContent = formatarValor(totalReceitas);
+    }
+
+    if (elementoDespesas) {
+        elementoDespesas.textContent = formatarValor(totalDespesas);
+    }
+
+    if (elementoQuantidadeReceitas) {
+        elementoQuantidadeReceitas.textContent =
+            `${receitasDoMes.length} ${receitasDoMes.length === 1 ? "entrada" : "entradas"}`;
+    }
+
+    if (elementoQuantidadeDespesas) {
+        elementoQuantidadeDespesas.textContent =
+            `${despesasDoMes.length} ${despesasDoMes.length === 1 ? "movimentação" : "movimentações"}`;
+    }
+}
+
+atualizarResumoFinanceiro();
 exibirMovimentacoes();
