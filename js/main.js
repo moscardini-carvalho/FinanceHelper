@@ -338,6 +338,7 @@ if (formularioCadastro) {
         exibirMovimentacoes();
         atualizarResumoFinanceiro();
         atualizarGraficoDespesas();
+        atualizarGraficoMensal();
 
         mensagemFormulario.textContent = movimentacaoEmEdicaoId !== null
             ? "Movimentação atualizada com sucesso!"
@@ -531,6 +532,108 @@ function atualizarGraficoDespesas() {
 }
 
 
+function atualizarGraficoMensal() {
+    const grafico = document.querySelector("#grafico-mensal");
+
+    if (!grafico) {
+        return;
+    }
+
+    const agora = new Date();
+    const anoAtual = agora.getFullYear();
+    const mesAtual = agora.getMonth();
+
+    const meses = [];
+
+    for (let i = 5; i >= 0; i--) {
+        const data = new Date(anoAtual, mesAtual - i, 1);
+
+        meses.push({
+            nome: data.toLocaleDateString("pt-BR", {
+                month: "short"
+            }),
+            ano: data.getFullYear(),
+            mes: data.getMonth()
+        });
+    }
+
+    const totaisPorMes = meses.map((mes) => {
+        const movimentacoesDoMes = movimentacoes.filter((movimentacao) => {
+            const [ano, numeroMes] = movimentacao.data
+                .split("-")
+                .map(Number);
+
+            return (
+                ano === mes.ano &&
+                numeroMes === mes.mes + 1
+            );
+        });
+
+        const receitas = movimentacoesDoMes
+            .filter((movimentacao) => movimentacao.tipo === "receita")
+            .reduce((total, movimentacao) => total + movimentacao.valor, 0);
+
+        const despesas = movimentacoesDoMes
+            .filter((movimentacao) => movimentacao.tipo === "despesa")
+            .reduce((total, movimentacao) => total + movimentacao.valor, 0);
+
+        return { ...mes, receitas, despesas };
+    });
+
+    const maiorValor = Math.max(
+        1,
+        ...totaisPorMes.flatMap((mes) => [mes.receitas, mes.despesas])
+    );
+
+    const rotulosEixo = document.querySelectorAll(".chart-y-labels span");
+
+    if (rotulosEixo.length === 4) {
+        const valoresEixo = [
+            maiorValor,
+            maiorValor * (2 / 3),
+            maiorValor * (1 / 3),
+            0
+        ];
+
+        rotulosEixo.forEach((rotulo, indice) => {
+            rotulo.textContent = new Intl.NumberFormat("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+                notation: "compact",
+                maximumFractionDigits: 1
+            }).format(valoresEixo[indice]);
+        });
+    }
+
+    grafico.replaceChildren();
+
+    totaisPorMes.forEach((mes) => {
+        const grupo = document.createElement("div");
+        grupo.className = "bar-group";
+
+        const par = document.createElement("div");
+        par.className = "bar-pair";
+
+        const barraReceita = document.createElement("span");
+        barraReceita.className = "bar income";
+        barraReceita.style.height = `${(mes.receitas / maiorValor) * 100}%`;
+        barraReceita.title = `Receitas: ${formatarValor(mes.receitas)}`;
+
+        const barraDespesa = document.createElement("span");
+        barraDespesa.className = "bar expense";
+        barraDespesa.style.height = `${(mes.despesas / maiorValor) * 100}%`;
+        barraDespesa.title = `Despesas: ${formatarValor(mes.despesas)}`;
+
+        par.append(barraReceita, barraDespesa);
+
+        const rotulo = document.createElement("span");
+        rotulo.textContent = mes.nome;
+
+        grupo.append(par, rotulo);
+        grafico.appendChild(grupo);
+    });
+}
+
 function excluirMovimentacao(id) {
     const indice = movimentacoes.findIndex(
         (movimentacao) => movimentacao.id === id
@@ -567,9 +670,11 @@ function excluirMovimentacao(id) {
     exibirMovimentacoes();
     atualizarResumoFinanceiro();
     atualizarGraficoDespesas();
+    atualizarGraficoMensal();
 }
 
 
 atualizarResumoFinanceiro();
 exibirMovimentacoes();
 atualizarGraficoDespesas();
+atualizarGraficoMensal();
