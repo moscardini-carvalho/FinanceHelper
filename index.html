@@ -210,12 +210,17 @@
                     </div>
                     <div class="spending-content">
                         <div class="donut-wrap">
-                            <div class="donut-chart" role="img"
-                                aria-label="Gráfico demonstrativo: alimentação 64%, transporte 21%, assinaturas 15%">
-                                <div class="donut-center"><span>Total gasto</span><strong>R$ 700</strong></div>
+
+                            <div class="donut-chart" id="grafico-despesas" role="img"
+                                aria-label="Gráfico de despesas por categoria">
+                                <div class="donut-center">
+                                    <span>Total gasto</span>
+                                    <strong id="total-grafico-despesas">R$ 0,00</strong>
+                                </div>
                             </div>
+
                         </div>
-                        <div class="legend-list">
+                        <div class="legend-list" id="legenda-despesas">
                             <div class="legend-item"><span class="legend-dot dot-blue"></span><span
                                     class="legend-name">Alimentação</span><strong>R$ 450</strong><small>64%</small>
                             </div>
