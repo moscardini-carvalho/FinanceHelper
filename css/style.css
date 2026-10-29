@@ -1561,3 +1561,173 @@ textarea:focus {
 #grafico-mensal .bar-pair {
     min-height: 0;
 }
+
+/* Orçamento mensal por categoria */
+.budgets-panel {
+    margin-top: 18px;
+}
+
+.budget-month {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: capitalize;
+}
+
+.budget-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 14px;
+    margin-top: 22px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+}
+
+.budget-form .primary-button {
+    min-height: 42px;
+    white-space: nowrap;
+}
+
+.budget-message {
+    margin: 12px 0 0;
+    color: var(--blue);
+    font-size: 12px;
+}
+
+.budget-message:empty {
+    display: none;
+}
+
+.budget-list {
+    display: grid;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.budget-empty {
+    margin: 0;
+    padding: 14px 0 4px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.budget-item {
+    display: grid;
+    gap: 10px;
+}
+
+.budget-item-top,
+.budget-item-bottom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.budget-category {
+    color: var(--ink);
+    font-size: 12px;
+}
+
+.budget-values {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.budget-remove {
+    flex: 0 0 auto;
+}
+
+.budget-track {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #eef0f6;
+}
+
+.budget-progress {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--blue);
+    transition: width .25s ease;
+}
+
+.budget-progress.is-warning {
+    background: var(--orange);
+}
+
+.budget-progress.is-over {
+    background: #e35d6a;
+}
+
+.budget-item-bottom {
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.budget-status.is-warning {
+    color: #bd791d;
+}
+
+.budget-status.is-over {
+    color: #d84e5b;
+    font-weight: 700;
+}
+
+@media (max-width: 760px) {
+    .budget-form {
+        grid-template-columns: 1fr;
+    }
+
+    .budget-form .primary-button {
+        width: 100%;
+    }
+
+    .budget-item-top {
+        flex-wrap: wrap;
+    }
+
+    .budget-values {
+        margin-left: 0;
+    }
+
+    .budget-remove {
+        margin-left: auto;
+    }
+}
+
+.savings-progress {
+    margin-top: 16px;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.savings-progress p {
+    margin: 4px 0;
+}
+
+.savings-progress .progress-text {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.savings-progress .progress-track {
+    width: 100%;
+    height: 12px;
+    margin-top: 12px;
+    overflow: hidden;
+    background-color: #e9eaf2;
+    border-radius: 20px;
+}
+
+.savings-progress .progress-fill {
+    height: 100%;
+    width: 0;
+    background-color: #5665f5;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}

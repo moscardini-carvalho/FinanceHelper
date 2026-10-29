@@ -339,6 +339,7 @@ if (formularioCadastro) {
         atualizarResumoFinanceiro();
         atualizarGraficoDespesas();
         atualizarGraficoMensal();
+        atualizarOrcamentos();
 
         mensagemFormulario.textContent = movimentacaoEmEdicaoId !== null
             ? "Movimentação atualizada com sucesso!"
@@ -405,6 +406,7 @@ function atualizarResumoFinanceiro() {
     const saldo = somar(receitas) - somar(despesas);
     const totalReceitas = somar(receitasDoMes);
     const totalDespesas = somar(despesasDoMes);
+    saldoDoMes = totalReceitas - totalDespesas;
 
     if (elementoSaldo) {
         elementoSaldo.textContent = formatarValor(saldo);
@@ -634,6 +636,316 @@ function atualizarGraficoMensal() {
     });
 }
 
+
+/* Orçamentos mensais por categoria */
+
+const CHAVE_ORCAMENTOS = "financeHelper_orcamentos";
+const CHAVE_META_ECONOMIA = "financeHelper_meta_economia";
+const formularioMetaEconomia = document.querySelector("#form-meta-economia");
+const mensagemMetaEconomia = document.querySelector("#mensagem-meta-economia");
+const mesMetaEconomia = document.querySelector("#mes-meta-economia");
+
+function carregarMetaEconomia() {
+    try {
+        const dados = localStorage.getItem(CHAVE_META_ECONOMIA);
+
+        if (!dados) {
+            return 0;
+        }
+
+        const meta = Number(dados);
+
+        return Number.isFinite(meta) && meta > 0 ? meta : 0;
+    } catch (erro) {
+        console.error("Erro ao carregar meta de economia:", erro);
+        return 0;
+    }
+}
+
+let metaEconomia = carregarMetaEconomia();
+let saldoDoMes = 0;
+
+function salvarMetaEconomia(meta) {
+    try {
+        localStorage.setItem(
+            CHAVE_META_ECONOMIA,
+            String(meta)
+        );
+
+        metaEconomia = meta;
+    } catch (erro) {
+        console.error("Erro ao salvar meta de economia:", erro);
+    }
+}
+
+
+function atualizarMetaEconomia() {
+    if (metaEconomia <= 0) {
+        mensagemMetaEconomia.textContent =
+            "Defina uma meta para acompanhar seu progresso.";
+        return;
+    }
+
+    const progresso = Math.max(0, saldoDoMes);
+    const percentual = Math.min(
+        (progresso / metaEconomia) * 100,
+        100
+    );
+
+    mensagemMetaEconomia.textContent =
+        `Você acumulou ${formatarMoeda(progresso)} de ${formatarMoeda(metaEconomia)}.`;
+
+    const elementoProgresso = document.querySelector("#progresso-meta-economia");
+
+    if (elementoProgresso) {
+        elementoProgresso.innerHTML = `
+        <p class="progress-text">
+            Progresso: ${percentual.toFixed(1)}%
+        </p>
+
+        <div
+            class="progress-track"
+            role="progressbar"
+            aria-label="Progresso da meta de economia"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="${percentual.toFixed(1)}"
+        >
+            <div
+                class="progress-fill"
+                style="width: ${percentual}%"
+            ></div>
+        </div>
+    `;
+    }
+}
+
+function formatarMoeda(valor) {
+    return valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+if (formularioMetaEconomia) {
+    formularioMetaEconomia.addEventListener("submit", function (evento) {
+        evento.preventDefault();
+
+        const dadosFormulario = new FormData(formularioMetaEconomia);
+        const meta = Number(dadosFormulario.get("meta"));
+
+        if (!Number.isFinite(meta) || meta <= 0) {
+            mensagemMetaEconomia.textContent = "Digite um valor válido para sua meta.";
+            return;
+        }
+
+        salvarMetaEconomia(meta);
+        atualizarMetaEconomia();
+
+        formularioMetaEconomia.reset();
+    });
+}
+
+
+const formularioOrcamento = document.querySelector("#form-orcamento");
+const listaOrcamentos = document.querySelector("#lista-orcamentos");
+const mensagemOrcamento = document.querySelector("#mensagem-orcamento");
+const mesOrcamento = document.querySelector("#mes-orcamento");
+
+function carregarOrcamentos() {
+    try {
+        const dados = localStorage.getItem(CHAVE_ORCAMENTOS);
+        if (!dados) return [];
+
+        const orcamentos = JSON.parse(dados);
+        return Array.isArray(orcamentos) ? orcamentos : [];
+    } catch (erro) {
+        console.error("Erro ao carregar orçamentos:", erro);
+        return [];
+    }
+}
+
+let orcamentos = carregarOrcamentos();
+
+function salvarOrcamentos() {
+    try {
+        localStorage.setItem(CHAVE_ORCAMENTOS, JSON.stringify(orcamentos));
+        return true;
+    } catch (erro) {
+        console.error("Erro ao salvar orçamentos:", erro);
+        return false;
+    }
+}
+
+function atualizarOrcamentos() {
+    if (!listaOrcamentos) return;
+
+    const agora = new Date();
+    const anoAtual = agora.getFullYear();
+    const mesAtual = agora.getMonth();
+
+    if (mesOrcamento) {
+        mesOrcamento.textContent = new Intl.DateTimeFormat("pt-BR", {
+            month: "long",
+            year: "numeric"
+        }).format(agora);
+    }
+
+    const despesasDoMes = movimentacoes.filter((item) => {
+        if (item.tipo !== "despesa") return false;
+        const [ano, mes] = item.data.split("-").map(Number);
+        return ano === anoAtual && mes === mesAtual + 1;
+    });
+
+    listaOrcamentos.replaceChildren();
+
+    if (orcamentos.length === 0) {
+        const vazio = document.createElement("p");
+        vazio.className = "budget-empty";
+        vazio.textContent = "Nenhum orçamento cadastrado. Defina um limite para começar.";
+        listaOrcamentos.appendChild(vazio);
+        return;
+    }
+
+    orcamentos.forEach((orcamento, indice) => {
+        const gasto = despesasDoMes
+            .filter((item) => item.categoria.trim().toLocaleLowerCase("pt-BR") ===
+                orcamento.categoria.trim().toLocaleLowerCase("pt-BR"))
+            .reduce((total, item) => total + item.valor, 0);
+
+        const percentual = (gasto / orcamento.limite) * 100;
+        const percentualVisual = Math.min(percentual, 100);
+
+        const item = document.createElement("article");
+        item.className = "budget-item";
+
+        const topo = document.createElement("div");
+        topo.className = "budget-item-top";
+
+        const categoria = document.createElement("strong");
+        categoria.className = "budget-category";
+        categoria.textContent = orcamento.categoria;
+
+        const valores = document.createElement("span");
+        valores.className = "budget-values";
+        valores.textContent = `${formatarValor(gasto)} de ${formatarValor(orcamento.limite)}`;
+
+        const botaoExcluir = document.createElement("button");
+        botaoExcluir.type = "button";
+        botaoExcluir.className = "text-button budget-remove";
+        botaoExcluir.textContent = "Remover";
+        botaoExcluir.setAttribute("aria-label", `Remover orçamento de ${orcamento.categoria}`);
+        botaoExcluir.addEventListener("click", () => removerOrcamento(indice));
+
+        topo.append(categoria, valores, botaoExcluir);
+
+        const trilho = document.createElement("div");
+        trilho.className = "budget-track";
+        trilho.setAttribute("role", "progressbar");
+        trilho.setAttribute("aria-label", `Orçamento de ${orcamento.categoria}`);
+        trilho.setAttribute("aria-valuemin", "0");
+        trilho.setAttribute("aria-valuemax", String(orcamento.limite));
+        trilho.setAttribute("aria-valuenow", String(Math.min(gasto, orcamento.limite)));
+
+        const progresso = document.createElement("span");
+        progresso.className = "budget-progress";
+        if (percentual >= 100) {
+            progresso.classList.add("is-over");
+        } else if (percentual >= 80) {
+            progresso.classList.add("is-warning");
+        }
+        progresso.style.width = `${percentualVisual}%`;
+        trilho.appendChild(progresso);
+
+        const rodape = document.createElement("div");
+        rodape.className = "budget-item-bottom";
+
+        const situacao = document.createElement("span");
+        if (percentual >= 100) {
+            situacao.className = "budget-status is-over";
+            situacao.textContent = `Limite ultrapassado em ${formatarValor(gasto - orcamento.limite)}`;
+        } else if (percentual >= 80) {
+            situacao.className = "budget-status is-warning";
+            situacao.textContent = `${Math.round(percentual)}% utilizado. Atenção ao limite`;
+        } else {
+            situacao.className = "budget-status";
+            situacao.textContent = `Restam ${formatarValor(orcamento.limite - gasto)}`;
+        }
+
+        const percentualTexto = document.createElement("span");
+        percentualTexto.textContent = `${Math.round(percentual)}%`;
+        rodape.append(situacao, percentualTexto);
+
+        item.append(topo, trilho, rodape);
+        listaOrcamentos.appendChild(item);
+    });
+}
+
+function removerOrcamento(indice) {
+    const removido = orcamentos.splice(indice, 1)[0];
+    if (!salvarOrcamentos()) {
+        orcamentos.splice(indice, 0, removido);
+        if (mensagemOrcamento) {
+            mensagemOrcamento.textContent = "Não foi possível remover o orçamento. Tente novamente.";
+        }
+        return;
+    }
+
+    if (mensagemOrcamento) mensagemOrcamento.textContent = "Orçamento removido.";
+    atualizarOrcamentos();
+}
+
+if (formularioOrcamento) {
+    formularioOrcamento.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+
+        const campos = new FormData(formularioOrcamento);
+        const categoria = String(campos.get("categoria") || "").trim();
+        const limite = Number(campos.get("limite"));
+
+        if (!categoria || !Number.isFinite(limite) || limite <= 0) {
+            if (mensagemOrcamento) mensagemOrcamento.textContent =
+                "Informe uma categoria e um limite maior que zero.";
+            return;
+        }
+
+        const indiceExistente = orcamentos.findIndex((item) =>
+            item.categoria.toLocaleLowerCase("pt-BR") === categoria.toLocaleLowerCase("pt-BR")
+        );
+        const anterior = indiceExistente >= 0 ? { ...orcamentos[indiceExistente] } : null;
+
+        const novoOrcamento = {
+            categoria,
+            limite: Math.round((limite + Number.EPSILON) * 100) / 100
+        };
+
+        if (indiceExistente >= 0) {
+            orcamentos[indiceExistente] = novoOrcamento;
+        } else {
+            orcamentos.push(novoOrcamento);
+        }
+
+        if (!salvarOrcamentos()) {
+            if (indiceExistente >= 0) {
+                orcamentos[indiceExistente] = anterior;
+            } else {
+                orcamentos.pop();
+            }
+            if (mensagemOrcamento) mensagemOrcamento.textContent =
+                "Não foi possível salvar o orçamento. Tente novamente.";
+            return;
+        }
+
+        formularioOrcamento.reset();
+        if (mensagemOrcamento) {
+            mensagemOrcamento.textContent = indiceExistente >= 0
+                ? "Limite mensal atualizado com sucesso!"
+                : "Orçamento cadastrado com sucesso!";
+        }
+        atualizarOrcamentos();
+    });
+}
+
 function excluirMovimentacao(id) {
     const indice = movimentacoes.findIndex(
         (movimentacao) => movimentacao.id === id
@@ -671,10 +983,14 @@ function excluirMovimentacao(id) {
     atualizarResumoFinanceiro();
     atualizarGraficoDespesas();
     atualizarGraficoMensal();
+    atualizarOrcamentos();
+    atualizarMetaEconomia();
 }
 
 
-atualizarResumoFinanceiro();
 exibirMovimentacoes();
+atualizarResumoFinanceiro();
 atualizarGraficoDespesas();
 atualizarGraficoMensal();
+atualizarOrcamentos();
+atualizarMetaEconomia();
