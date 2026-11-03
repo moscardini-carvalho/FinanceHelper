@@ -994,3 +994,77 @@ atualizarGraficoDespesas();
 atualizarGraficoMensal();
 atualizarOrcamentos();
 atualizarMetaEconomia();
+
+
+/* AUTENTICAÇÃO E CONTROLE DE ACESSO */
+
+const telaLogin = document.querySelector("#tela-login");
+const appShell = document.querySelector(".app-shell");
+const formularioLogin = document.querySelector("#form-login");
+const mensagemLogin = document.querySelector("#mensagem-login");
+const botaoLogin = document.querySelector("#botao-login");
+
+function mostrarTelaLogin() {
+    telaLogin.hidden = false;
+    appShell.hidden = true;
+}
+
+function mostrarDashboard() {
+    telaLogin.hidden = true;
+    appShell.hidden = false;
+}
+
+if (formularioLogin) {
+    formularioLogin.addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+
+        const email = document.querySelector("#email-login").value.trim();
+        const senha = document.querySelector("#senha-login").value;
+
+        mensagemLogin.textContent = "";
+        botaoLogin.disabled = true;
+        botaoLogin.textContent = "Entrando...";
+
+        try {
+            const resultado = await fazerLogin(email, senha);
+
+            if (!resultado) {
+                mensagemLogin.textContent =
+                    "E-mail ou senha incorretos. Verifique suas credenciais.";
+                return;
+            }
+
+            formularioLogin.reset();
+            mostrarDashboard();
+
+        } catch (erro) {
+            console.error("Erro durante o login:", erro);
+
+            mensagemLogin.textContent =
+                "Não foi possível realizar o login. Tente novamente.";
+
+        } finally {
+            botaoLogin.disabled = false;
+            botaoLogin.textContent = "Entrar";
+        }
+    });
+}
+
+// Verifica se já existe uma sessão ativa
+async function verificarAutenticacao() {
+    try {
+        const sessao = await obterSessao();
+
+        if (sessao) {
+            mostrarDashboard();
+        } else {
+            mostrarTelaLogin();
+        }
+
+    } catch (erro) {
+        console.error("Erro ao verificar autenticação:", erro);
+        mostrarTelaLogin();
+    }
+}
+
+verificarAutenticacao();

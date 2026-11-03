@@ -7,381 +7,424 @@
     <meta name="description" content="Dashboard pessoal para acompanhar receitas, despesas e hábitos financeiros.">
     <title>Meu Financeiro | Visão geral</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- Biblioteca oficial do Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+
+    <!-- Configuração do Supabase -->
+    <script src="js/services/supabase.js" defer></script>
+
+    <!-- Serviços do FinanceHelper -->
     <script src="js/services/movimentacoes.js" defer></script>
     <script src="js/services/armazenamento.js" defer></script>
+    <script src="js/services/autenticacao.js" defer></script>
+
+    <!-- Aplicação principal -->
     <script src="js/main.js" defer></script>
 </head>
 
 <body>
-    <div class="app-shell">
-        <aside class="sidebar" id="sidebar">
-            <a class="brand" href="#" aria-label="Meu Financeiro, página inicial">
-                <span class="brand-mark" aria-hidden="true">M</span>
-                <span class="brand-name">meu<span>financeiro</span></span>
-            </a>
 
-            <p class="nav-label">MENU PRINCIPAL</p>
-            <nav class="main-nav" aria-label="Navegação principal">
-                <a class="nav-link active" href="#visao-geral" aria-current="page">
-                    <span class="nav-icon" aria-hidden="true">▦</span><span>Visão geral</span>
-                </a>
-                <a class="nav-link disabled-link" href="#movimentacoes" aria-disabled="true"
-                    title="Disponível em uma etapa futura">
-                    <span class="nav-icon" aria-hidden="true">↕</span><span>Movimentações</span><span class="soon">Em
-                        breve</span>
-                </a>
-                <a class="nav-link disabled-link" href="#relatorios" aria-disabled="true"
-                    title="Disponível em uma etapa futura">
-                    <span class="nav-icon" aria-hidden="true">▥</span><span>Relatórios</span><span class="soon">Em
-                        breve</span>
-                </a>
-                <a class="nav-link disabled-link" href="#contas" aria-disabled="true"
-                    title="Disponível em uma etapa futura">
-                    <span class="nav-icon" aria-hidden="true">▣</span><span>Contas e cartões</span><span class="soon">Em
-                        breve</span>
-                </a>
-            </nav>
-
-            <div class="sidebar-bottom">
-                <div class="tip-card">
-                    <span class="tip-icon" aria-hidden="true">✦</span>
-                    <p class="tip-title">Seu dinheiro, mais claro.</p>
-                    <p class="tip-copy">Em breve você poderá registrar suas movimentações e entender para onde seu
-                        dinheiro vai.</p>
+    <body>
+        <section id="tela-login" hidden>
+            <div class="login-container">
+                <div class="login-header">
+                    <h1>meu<span>financeiro</span></h1>
+                    <p>Acesse sua conta para acompanhar suas finanças.</p>
                 </div>
-                <div class="profile">
-                    <div class="avatar" aria-hidden="true">JP</div>
-                    <div class="profile-copy"><strong>Meu espaço</strong><span>Finanças pessoais</span></div>
-                    <span class="profile-dots" aria-hidden="true">•••</span>
-                </div>
-            </div>
-        </aside>
 
-        <main class="main-content" id="visao-geral">
-            <header class="topbar">
-                <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"
-                    aria-controls="sidebar">
-                    <span></span><span></span><span></span>
-                </button>
-                <div class="breadcrumb"><span>Meu espaço</span><span class="crumb-separator">/</span><strong>Visão
-                        geral</strong></div>
-                <div class="topbar-right">
-                    <span class="demo-pill"><span></span> Prévia demonstrativa</span>
-                    <button class="icon-button" type="button" aria-label="Notificações"
-                        title="Notificações ainda não disponíveis">♧</button>
-                </div>
-            </header>
+                <form id="form-login">
+                    <label for="email-login">E-mail</label>
+                    <input type="email" id="email-login" name="email" placeholder="seu@email.com" required>
 
-            <section class="page-heading">
-                <div>
-                    <p class="eyebrow" id="current-date">SUA VIDA FINANCEIRA EM UM SÓ LUGAR</p>
-                    <h1>Visão geral<span class="heading-dot">.</span></h1>
-                    <p class="page-subtitle">Uma visão mais simples das suas finanças começa aqui.</p>
-                </div>
-                <button class="primary-button" id="nova-movimentacao" type="button">
-                    <span aria-hidden="true">+</span> Nova movimentação
-                </button>
-            </section>
+                    <label for="senha-login">Senha</label>
+                    <input type="password" id="senha-login" name="senha" placeholder="Digite sua senha" required>
 
-
-            <section class="panel form-panel" id="formulario-movimentacao" hidden aria-labelledby="formulario-titulo">
-                <div class="panel-header">
-                    <div>
-                        <p class="panel-kicker">NOVA ENTRADA</p>
-                        <h2 id="formulario-titulo">Cadastrar movimentação</h2>
-                    </div>
-                    <button class="text-button" id="cancelar-movimentacao" type="button">
-                        Cancelar
+                    <button type="submit" id="botao-login">
+                        Entrar
                     </button>
+
+                    <p id="mensagem-login" role="status" aria-live="polite"></p>
+                </form>
+            </div>
+        </section>
+
+        <div class="app-shell" hidden>
+            <aside class="sidebar" id="sidebar">
+                <a class="brand" href="#" aria-label="Meu Financeiro, página inicial">
+                    <span class="brand-mark" aria-hidden="true">M</span>
+                    <span class="brand-name">meu<span>financeiro</span></span>
+                </a>
+
+                <p class="nav-label">MENU PRINCIPAL</p>
+                <nav class="main-nav" aria-label="Navegação principal">
+                    <a class="nav-link active" href="#visao-geral" aria-current="page">
+                        <span class="nav-icon" aria-hidden="true">▦</span><span>Visão geral</span>
+                    </a>
+                    <a class="nav-link disabled-link" href="#movimentacoes" aria-disabled="true"
+                        title="Disponível em uma etapa futura">
+                        <span class="nav-icon" aria-hidden="true">↕</span><span>Movimentações</span><span
+                            class="soon">Em
+                            breve</span>
+                    </a>
+                    <a class="nav-link disabled-link" href="#relatorios" aria-disabled="true"
+                        title="Disponível em uma etapa futura">
+                        <span class="nav-icon" aria-hidden="true">▥</span><span>Relatórios</span><span class="soon">Em
+                            breve</span>
+                    </a>
+                    <a class="nav-link disabled-link" href="#contas" aria-disabled="true"
+                        title="Disponível em uma etapa futura">
+                        <span class="nav-icon" aria-hidden="true">▣</span><span>Contas e cartões</span><span
+                            class="soon">Em
+                            breve</span>
+                    </a>
+                </nav>
+
+                <div class="sidebar-bottom">
+                    <div class="tip-card">
+                        <span class="tip-icon" aria-hidden="true">✦</span>
+                        <p class="tip-title">Seu dinheiro, mais claro.</p>
+                        <p class="tip-copy">Em breve você poderá registrar suas movimentações e entender para onde seu
+                            dinheiro vai.</p>
+                    </div>
+                    <div class="profile">
+                        <div class="avatar" aria-hidden="true">JP</div>
+                        <div class="profile-copy"><strong>Meu espaço</strong><span>Finanças pessoais</span></div>
+                        <span class="profile-dots" aria-hidden="true">•••</span>
+                    </div>
                 </div>
+            </aside>
 
-                <form id="form-movimentacao">
-                    <div class="form-grid">
-                        <label class="form-field">
-                            Descrição
-                            <input type="text" name="descricao" required maxlength="100"
-                                placeholder="Ex.: Salário ou Mercado">
-                        </label>
+            <main class="main-content" id="visao-geral">
+                <header class="topbar">
+                    <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menu"
+                        aria-expanded="false" aria-controls="sidebar">
+                        <span></span><span></span><span></span>
+                    </button>
+                    <div class="breadcrumb"><span>Meu espaço</span><span class="crumb-separator">/</span><strong>Visão
+                            geral</strong></div>
+                    <div class="topbar-right">
+                        <span class="demo-pill"><span></span> Prévia demonstrativa</span>
+                        <button class="icon-button" type="button" aria-label="Notificações"
+                            title="Notificações ainda não disponíveis">♧</button>
+                    </div>
+                </header>
 
-                        <label class="form-field">
-                            Tipo
-                            <select name="tipo" required>
-                                <option value="despesa">Despesa</option>
-                                <option value="receita">Receita</option>
-                            </select>
-                        </label>
+                <section class="page-heading">
+                    <div>
+                        <p class="eyebrow" id="current-date">SUA VIDA FINANCEIRA EM UM SÓ LUGAR</p>
+                        <h1>Visão geral<span class="heading-dot">.</span></h1>
+                        <p class="page-subtitle">Uma visão mais simples das suas finanças começa aqui.</p>
+                    </div>
+                    <button class="primary-button" id="nova-movimentacao" type="button">
+                        <span aria-hidden="true">+</span> Nova movimentação
+                    </button>
+                </section>
 
-                        <label class="form-field">
-                            Valor (R$)
-                            <input type="number" name="valor" required min="0.01" step="0.01" placeholder="0,00">
-                        </label>
 
+                <section class="panel form-panel" id="formulario-movimentacao" hidden
+                    aria-labelledby="formulario-titulo">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-kicker">NOVA ENTRADA</p>
+                            <h2 id="formulario-titulo">Cadastrar movimentação</h2>
+                        </div>
+                        <button class="text-button" id="cancelar-movimentacao" type="button">
+                            Cancelar
+                        </button>
+                    </div>
+
+                    <form id="form-movimentacao">
+                        <div class="form-grid">
+                            <label class="form-field">
+                                Descrição
+                                <input type="text" name="descricao" required maxlength="100"
+                                    placeholder="Ex.: Salário ou Mercado">
+                            </label>
+
+                            <label class="form-field">
+                                Tipo
+                                <select name="tipo" required>
+                                    <option value="despesa">Despesa</option>
+                                    <option value="receita">Receita</option>
+                                </select>
+                            </label>
+
+                            <label class="form-field">
+                                Valor (R$)
+                                <input type="number" name="valor" required min="0.01" step="0.01" placeholder="0,00">
+                            </label>
+
+                            <label class="form-field">
+                                Categoria
+                                <input type="text" name="categoria" required maxlength="50"
+                                    placeholder="Ex.: Alimentação">
+                            </label>
+
+                            <label class="form-field">
+                                Data
+                                <input type="date" name="data" required>
+                            </label>
+
+                            <label class="form-field">
+                                Forma de pagamento
+                                <select name="formaPagamento" required>
+                                    <option value="">Selecione</option>
+                                    <option value="Pix">Pix</option>
+                                    <option value="Dinheiro">Dinheiro</option>
+                                    <option value="Cartão">Cartão</option>
+                                    <option value="Conta bancária">Conta bancária</option>
+                                    <option value="Boleto">Boleto</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <p id="mensagem-formulario" role="status" aria-live="polite"></p>
+
+                        <div class="form-actions">
+                            <button class="primary-button" type="submit">
+                                Salvar movimentação
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+
+
+                <section class="summary-grid" aria-label="Resumo financeiro">
+                    <article class="summary-card balance-card">
+                        <div class="card-topline">
+                            <span class="card-label">Saldo total</span>
+                            <span class="metric-icon purple" aria-hidden="true">◈</span>
+                        </div>
+                        <p class="metric-value" id="saldo-total">R$ 0,00</p>
+                        <div class="metric-foot">
+                            <span class="metric-note" id="saldo-descricao">Saldo acumulado</span>
+                        </div>
+                        <div class="card-decoration" aria-hidden="true"></div>
+                    </article>
+
+                    <article class="summary-card">
+                        <div class="card-topline">
+                            <span class="card-label">Receitas do mês</span>
+                            <span class="metric-icon green" aria-hidden="true">↙</span>
+                        </div>
+                        <p class="metric-value" id="total-receitas">R$ 0,00</p>
+                        <div class="metric-foot">
+                            <span class="metric-note" id="quantidade-receitas">0 entradas</span>
+                            <span>neste mês</span>
+                        </div>
+                        <div class="mini-bars income-bars" aria-hidden="true">
+                            <i></i><i></i><i></i><i></i>
+                            <i></i><i></i><i></i><i></i>
+                        </div>
+                    </article>
+
+                    <article class="summary-card">
+                        <div class="card-topline">
+                            <span class="card-label">Despesas do mês</span>
+                            <span class="metric-icon orange" aria-hidden="true">↗</span>
+                        </div>
+                        <p class="metric-value" id="total-despesas">R$ 0,00</p>
+                        <div class="metric-foot">
+                            <span class="metric-note" id="quantidade-despesas">0 movimentações</span>
+                            <span>neste mês</span>
+                        </div>
+                        <div class="mini-bars expense-bars" aria-hidden="true">
+                            <i></i><i></i><i></i><i></i>
+                            <i></i><i></i><i></i><i></i>
+                        </div>
+                    </article>
+                </section>
+
+
+                <section class="analytics-grid" aria-label="Análises demonstrativas">
+                    <article class="panel spending-panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="panel-kicker">ANÁLISE DE DESPESAS</p>
+                                <h2>Para onde vai seu dinheiro?</h2>
+                            </div>
+                            <span class="period-select">Este mês <span aria-hidden="true">⌄</span></span>
+                        </div>
+                        <div class="spending-content">
+                            <div class="donut-wrap">
+
+                                <div class="donut-chart" id="grafico-despesas" role="img"
+                                    aria-label="Gráfico de despesas por categoria">
+                                    <div class="donut-center">
+                                        <span>Total gasto</span>
+                                        <strong id="total-grafico-despesas">R$ 0,00</strong>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="legend-list" id="legenda-despesas">
+                                <div class="legend-item"><span class="legend-dot dot-blue"></span><span
+                                        class="legend-name">Alimentação</span><strong>R$ 450</strong><small>64%</small>
+                                </div>
+                                <div class="legend-item"><span class="legend-dot dot-violet"></span><span
+                                        class="legend-name">Transporte</span><strong>R$ 150</strong><small>21%</small>
+                                </div>
+                                <div class="legend-item"><span class="legend-dot dot-orange"></span><span
+                                        class="legend-name">Assinaturas</span><strong>R$ 100</strong><small>15%</small>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="demo-note"><span aria-hidden="true">ⓘ</span> Valores ilustrativos, não são dados
+                            salvos.
+                        </p>
+                    </article>
+
+                    <article class="panel cashflow-panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="panel-kicker">VISÃO MENSAL</p>
+                                <h2>Receitas x despesas</h2>
+                            </div>
+                            <span class="chart-legend"><i class="legend-dot dot-blue"></i> Receitas <i
+                                    class="legend-dot dot-orange"></i> Despesas</span>
+                        </div>
+                        <div class="bar-chart" role="img"
+                            aria-label="Gráfico demonstrativo comparando receitas e despesas de janeiro a junho">
+                            <div class="chart-y-labels"><span>3 mil</span><span>2 mil</span><span>1
+                                    mil</span><span>0</span>
+                            </div>
+                            <div class="chart-plot">
+
+                                <div class="grid-lines" aria-hidden="true">
+                                    <i></i>
+                                    <i></i>
+                                    <i></i>
+                                    <i></i>
+                                </div>
+
+                                <div class="chart-months" id="grafico-mensal">
+                                    <!-- As barras serão geradas pelo JavaScript -->
+                                </div>
+
+                            </div>
+                        </div>
+                        <p class="demo-note">
+                            <span aria-hidden="true">ⓘ</span>
+                            Comparativo mensal baseado nas suas movimentações registradas.
+                        </p>
+                    </article>
+                </section>
+
+                <section class="panel budgets-panel" aria-labelledby="budgets-title">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-kicker">PLANEJAMENTO FINANCEIRO</p>
+                            <h2 id="budgets-title">Orçamento mensal por categoria</h2>
+                        </div>
+                        <span class="budget-month" id="mes-orcamento"></span>
+                    </div>
+
+                    <form id="form-orcamento" class="budget-form">
                         <label class="form-field">
                             Categoria
                             <input type="text" name="categoria" required maxlength="50" placeholder="Ex.: Alimentação">
                         </label>
-
                         <label class="form-field">
-                            Data
-                            <input type="date" name="data" required>
+                            Limite mensal (R$)
+                            <input type="number" name="limite" required min="0.01" step="0.01"
+                                placeholder="Ex.: 500,00">
                         </label>
+                        <button class="primary-button" type="submit">Salvar orçamento</button>
+                    </form>
 
-                        <label class="form-field">
-                            Forma de pagamento
-                            <select name="formaPagamento" required>
-                                <option value="">Selecione</option>
-                                <option value="Pix">Pix</option>
-                                <option value="Dinheiro">Dinheiro</option>
-                                <option value="Cartão">Cartão</option>
-                                <option value="Conta bancária">Conta bancária</option>
-                                <option value="Boleto">Boleto</option>
-                                <option value="Outro">Outro</option>
-                            </select>
-                        </label>
+                    <p id="mensagem-orcamento" class="budget-message" role="status" aria-live="polite"></p>
+                    <div id="lista-orcamentos" class="budget-list">
+                        <p class="budget-empty">Nenhum orçamento cadastrado. Defina um limite para começar.</p>
+                    </div>
+                </section>
+
+                <section class="panel savings-panel" aria-labelledby="savings-title">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-kicker">PLANEJAMENTO FINANCEIRO</p>
+                            <h2 id="savings-title">Meta de economia mensal</h2>
+                        </div>
+                        <span id="mes-meta-economia" class="budget-month"></span>
                     </div>
 
-                    <p id="mensagem-formulario" role="status" aria-live="polite"></p>
+                    <form id="form-meta-economia" class="budget-form">
+                        <label class="form-field">
+                            Quanto deseja economizar? (R$)
+                            <input type="number" name="meta" required min="0.01" step="0.01" placeholder="Ex.: 300,00">
+                        </label>
 
-                    <div class="form-actions">
                         <button class="primary-button" type="submit">
-                            Salvar movimentação
+                            Salvar meta
                         </button>
-                    </div>
-                </form>
-            </section>
+                    </form>
 
+                    <p id="mensagem-meta-economia" class="budget-message" role="status" aria-live="polite"></p>
 
+                    <div id="progresso-meta-economia" class="savings-progress">
+                        <p>Defina uma meta para acompanhar seu progresso.</p>
+                    </div>
+                </section>
 
-            <section class="summary-grid" aria-label="Resumo financeiro">
-                <article class="summary-card balance-card">
-                    <div class="card-topline">
-                        <span class="card-label">Saldo total</span>
-                        <span class="metric-icon purple" aria-hidden="true">◈</span>
-                    </div>
-                    <p class="metric-value" id="saldo-total">R$ 0,00</p>
-                    <div class="metric-foot">
-                        <span class="metric-note" id="saldo-descricao">Saldo acumulado</span>
-                    </div>
-                    <div class="card-decoration" aria-hidden="true"></div>
-                </article>
-
-                <article class="summary-card">
-                    <div class="card-topline">
-                        <span class="card-label">Receitas do mês</span>
-                        <span class="metric-icon green" aria-hidden="true">↙</span>
-                    </div>
-                    <p class="metric-value" id="total-receitas">R$ 0,00</p>
-                    <div class="metric-foot">
-                        <span class="metric-note" id="quantidade-receitas">0 entradas</span>
-                        <span>neste mês</span>
-                    </div>
-                    <div class="mini-bars income-bars" aria-hidden="true">
-                        <i></i><i></i><i></i><i></i>
-                        <i></i><i></i><i></i><i></i>
-                    </div>
-                </article>
-
-                <article class="summary-card">
-                    <div class="card-topline">
-                        <span class="card-label">Despesas do mês</span>
-                        <span class="metric-icon orange" aria-hidden="true">↗</span>
-                    </div>
-                    <p class="metric-value" id="total-despesas">R$ 0,00</p>
-                    <div class="metric-foot">
-                        <span class="metric-note" id="quantidade-despesas">0 movimentações</span>
-                        <span>neste mês</span>
-                    </div>
-                    <div class="mini-bars expense-bars" aria-hidden="true">
-                        <i></i><i></i><i></i><i></i>
-                        <i></i><i></i><i></i><i></i>
-                    </div>
-                </article>
-            </section>
-
-
-            <section class="analytics-grid" aria-label="Análises demonstrativas">
-                <article class="panel spending-panel">
+                <section class="panel transactions-panel" aria-labelledby="transactions-title">
                     <div class="panel-header">
                         <div>
-                            <p class="panel-kicker">ANÁLISE DE DESPESAS</p>
-                            <h2>Para onde vai seu dinheiro?</h2>
+                            <p class="panel-kicker">ATIVIDADE RECENTE</p>
+                            <h2 id="transactions-title">Movimentações recentes</h2>
                         </div>
-                        <span class="period-select">Este mês <span aria-hidden="true">⌄</span></span>
+                        <button class="text-button" type="button" disabled>Ver todas <span
+                                aria-hidden="true">→</span></button>
                     </div>
-                    <div class="spending-content">
-                        <div class="donut-wrap">
-
-                            <div class="donut-chart" id="grafico-despesas" role="img"
-                                aria-label="Gráfico de despesas por categoria">
-                                <div class="donut-center">
-                                    <span>Total gasto</span>
-                                    <strong id="total-grafico-despesas">R$ 0,00</strong>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="legend-list" id="legenda-despesas">
-                            <div class="legend-item"><span class="legend-dot dot-blue"></span><span
-                                    class="legend-name">Alimentação</span><strong>R$ 450</strong><small>64%</small>
-                            </div>
-                            <div class="legend-item"><span class="legend-dot dot-violet"></span><span
-                                    class="legend-name">Transporte</span><strong>R$ 150</strong><small>21%</small></div>
-                            <div class="legend-item"><span class="legend-dot dot-orange"></span><span
-                                    class="legend-name">Assinaturas</span><strong>R$ 100</strong><small>15%</small>
-                            </div>
-                        </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th>Data</th>
+                                    <th>Forma</th>
+                                    <th class="amount-heading">Valor</th>
+                                </tr>
+                                <th>Ações</th>
+                            </thead>
+                            <tbody id="lista-movimentacoes">
+                                <tr>
+                                    <td><span class="transaction-symbol food">⌁</span><span
+                                            class="transaction-title">Mercado e almoço</span></td>
+                                    <td><span class="category-tag">Alimentação</span></td>
+                                    <td>24 out, 2026</td>
+                                    <td>Pix</td>
+                                    <td class="amount negative">− R$ 85,00</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="transaction-symbol salary">↙</span><span
+                                            class="transaction-title">Salário</span></td>
+                                    <td><span class="category-tag">Renda</span></td>
+                                    <td>20 out, 2026</td>
+                                    <td>Conta bancária</td>
+                                    <td class="amount positive-text">+ R$ 2.500,00</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="transaction-symbol transport">↗</span><span
+                                            class="transaction-title">Transporte</span></td>
+                                    <td><span class="category-tag">Transporte</span></td>
+                                    <td>18 out, 2026</td>
+                                    <td>Cartão</td>
+                                    <td class="amount negative">− R$ 45,00</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <p class="demo-note"><span aria-hidden="true">ⓘ</span> Valores ilustrativos, não são dados salvos.
-                    </p>
-                </article>
+                    <p class="demo-note"><span aria-hidden="true">ⓘ</span> Todas as movimentações exibidas são exemplos
+                        fictícios.</p>
+                </section>
 
-                <article class="panel cashflow-panel">
-                    <div class="panel-header">
-                        <div>
-                            <p class="panel-kicker">VISÃO MENSAL</p>
-                            <h2>Receitas x despesas</h2>
-                        </div>
-                        <span class="chart-legend"><i class="legend-dot dot-blue"></i> Receitas <i
-                                class="legend-dot dot-orange"></i> Despesas</span>
-                    </div>
-                    <div class="bar-chart" role="img"
-                        aria-label="Gráfico demonstrativo comparando receitas e despesas de janeiro a junho">
-                        <div class="chart-y-labels"><span>3 mil</span><span>2 mil</span><span>1 mil</span><span>0</span>
-                        </div>
-                        <div class="chart-plot">
-
-                            <div class="grid-lines" aria-hidden="true">
-                                <i></i>
-                                <i></i>
-                                <i></i>
-                                <i></i>
-                            </div>
-
-                            <div class="chart-months" id="grafico-mensal">
-                                <!-- As barras serão geradas pelo JavaScript -->
-                            </div>
-
-                        </div>
-                    </div>
-                    <p class="demo-note">
-                        <span aria-hidden="true">ⓘ</span>
-                        Comparativo mensal baseado nas suas movimentações registradas.
-                    </p>
-                </article>
-            </section>
-
-            <section class="panel budgets-panel" aria-labelledby="budgets-title">
-                <div class="panel-header">
-                    <div>
-                        <p class="panel-kicker">PLANEJAMENTO FINANCEIRO</p>
-                        <h2 id="budgets-title">Orçamento mensal por categoria</h2>
-                    </div>
-                    <span class="budget-month" id="mes-orcamento"></span>
-                </div>
-
-                <form id="form-orcamento" class="budget-form">
-                    <label class="form-field">
-                        Categoria
-                        <input type="text" name="categoria" required maxlength="50" placeholder="Ex.: Alimentação">
-                    </label>
-                    <label class="form-field">
-                        Limite mensal (R$)
-                        <input type="number" name="limite" required min="0.01" step="0.01" placeholder="Ex.: 500,00">
-                    </label>
-                    <button class="primary-button" type="submit">Salvar orçamento</button>
-                </form>
-
-                <p id="mensagem-orcamento" class="budget-message" role="status" aria-live="polite"></p>
-                <div id="lista-orcamentos" class="budget-list">
-                    <p class="budget-empty">Nenhum orçamento cadastrado. Defina um limite para começar.</p>
-                </div>
-            </section>
-
-            <section class="panel savings-panel" aria-labelledby="savings-title">
-                <div class="panel-header">
-                    <div>
-                        <p class="panel-kicker">PLANEJAMENTO FINANCEIRO</p>
-                        <h2 id="savings-title">Meta de economia mensal</h2>
-                    </div>
-                    <span id="mes-meta-economia" class="budget-month"></span>
-                </div>
-
-                <form id="form-meta-economia" class="budget-form">
-                    <label class="form-field">
-                        Quanto deseja economizar? (R$)
-                        <input type="number" name="meta" required min="0.01" step="0.01" placeholder="Ex.: 300,00">
-                    </label>
-
-                    <button class="primary-button" type="submit">
-                        Salvar meta
-                    </button>
-                </form>
-
-                <p id="mensagem-meta-economia" class="budget-message" role="status" aria-live="polite"></p>
-
-                <div id="progresso-meta-economia" class="savings-progress">
-                    <p>Defina uma meta para acompanhar seu progresso.</p>
-                </div>
-            </section>
-
-            <section class="panel transactions-panel" aria-labelledby="transactions-title">
-                <div class="panel-header">
-                    <div>
-                        <p class="panel-kicker">ATIVIDADE RECENTE</p>
-                        <h2 id="transactions-title">Movimentações recentes</h2>
-                    </div>
-                    <button class="text-button" type="button" disabled>Ver todas <span
-                            aria-hidden="true">→</span></button>
-                </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Descrição</th>
-                                <th>Categoria</th>
-                                <th>Data</th>
-                                <th>Forma</th>
-                                <th class="amount-heading">Valor</th>
-                            </tr>
-                            <th>Ações</th>
-                        </thead>
-                        <tbody id="lista-movimentacoes">
-                            <tr>
-                                <td><span class="transaction-symbol food">⌁</span><span
-                                        class="transaction-title">Mercado e almoço</span></td>
-                                <td><span class="category-tag">Alimentação</span></td>
-                                <td>24 out, 2026</td>
-                                <td>Pix</td>
-                                <td class="amount negative">− R$ 85,00</td>
-                            </tr>
-                            <tr>
-                                <td><span class="transaction-symbol salary">↙</span><span
-                                        class="transaction-title">Salário</span></td>
-                                <td><span class="category-tag">Renda</span></td>
-                                <td>20 out, 2026</td>
-                                <td>Conta bancária</td>
-                                <td class="amount positive-text">+ R$ 2.500,00</td>
-                            </tr>
-                            <tr>
-                                <td><span class="transaction-symbol transport">↗</span><span
-                                        class="transaction-title">Transporte</span></td>
-                                <td><span class="category-tag">Transporte</span></td>
-                                <td>18 out, 2026</td>
-                                <td>Cartão</td>
-                                <td class="amount negative">− R$ 45,00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p class="demo-note"><span aria-hidden="true">ⓘ</span> Todas as movimentações exibidas são exemplos
-                    fictícios.</p>
-            </section>
-
-            <footer class="page-footer"><span>Meu Financeiro <span class="footer-dot">•</span> Projeto em
-                    desenvolvimento</span><span>Seus dados financeiros ainda não são armazenados.</span></footer>
-        </main>
-    </div>
-    <div class="mobile-overlay" id="mobile-overlay" hidden></div>
-</body>
+                <footer class="page-footer"><span>Meu Financeiro <span class="footer-dot">•</span> Projeto em
+                        desenvolvimento</span><span>Seus dados financeiros ainda não são armazenados.</span></footer>
+            </main>
+        </div>
+        <div class="mobile-overlay" id="mobile-overlay" hidden></div>
+    </body>
 
 </html>
