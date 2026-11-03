@@ -1068,3 +1068,31 @@ async function verificarAutenticacao() {
 }
 
 verificarAutenticacao();
+
+// CONTROLE DO LOGOUT
+
+const botaoLogout = document.querySelector("#botao-logout");
+
+if (botaoLogout) {
+    botaoLogout.addEventListener("click", async () => {
+        botaoLogout.disabled = true;
+        botaoLogout.textContent = "Saindo...";
+
+        try {
+            const sucesso = await fazerLogout();
+
+            if (sucesso) {
+                mostrarTelaLogin();
+            } else {
+                console.error("Não foi possível encerrar a sessão.");
+            }
+
+        } catch (erro) {
+            console.error("Erro ao realizar logout:", erro);
+
+        } finally {
+            botaoLogout.disabled = false;
+            botaoLogout.textContent = "Sair";
+        }
+    });
+}
