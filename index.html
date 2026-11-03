@@ -12,6 +12,7 @@
 
     <!-- Configuração do Supabase -->
     <script src="js/services/supabase.js" defer></script>
+    <script src="js/services/categorias.js" defer></script>
 
     <!-- Serviços do FinanceHelper -->
     <script src="js/services/movimentacoes.js" defer></script>
@@ -161,8 +162,9 @@
 
                             <label class="form-field">
                                 Categoria
-                                <input type="text" name="categoria" required maxlength="50"
-                                    placeholder="Ex.: Alimentação">
+                                <select name="categoriaId" id="categoria-movimentacao" required>
+                                    <option value="">Carregando categorias...</option>
+                                </select>
                             </label>
 
                             <label class="form-field">

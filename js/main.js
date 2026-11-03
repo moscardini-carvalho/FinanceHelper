@@ -76,28 +76,7 @@ function abrirFormulario() {
         campoData.value = `${ano}-${mes}-${dia}`;
     }
 
-    formularioMovimentacao.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
-}
-
-
-function editarMovimentacao(id) {
-    const movimentacao = movimentacoes.find(
-        (item) => item.id === id
-    );
-
-    if (!movimentacao || !formularioCadastro) {
-        return;
-    }
-
-    movimentacaoEmEdicaoId = movimentacao.id;
-
-    formularioCadastro.elements["descricao"].value =
-        movimentacao.descricao;
-
-    formularioCadastro.elements["tipo"].value =
+    rioCadastro.elements["tipo"].value =
         movimentacao.tipo;
 
     formularioCadastro.elements["valor"].value =
@@ -127,7 +106,28 @@ function fecharFormulario() {
     formularioMovimentacao.hidden = true;
     movimentacaoEmEdicaoId = null;
 
-    if (formularioCadastro) {
+    if (formularioMovimentacao.scrollIntoView) ({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+
+function editarMovimentacao(id) {
+    const movimentacao = movimentacoes.find(
+        (item) => item.id === id
+    );
+
+    if (!movimentacao || !formularioCadastro) {
+        return;
+    }
+
+    movimentacaoEmEdicaoId = movimentacao.id;
+
+    formularioCadastro.elements["descricao"].value =
+        movimentacao.descricao;
+
+    if (formulaformularioCadastro) {
         formularioCadastro.reset();
     }
 
@@ -153,7 +153,7 @@ const mensagemFormulario = document.querySelector("#mensagem-formulario");
 const listaMovimentacoes = document.querySelector("#lista-movimentacoes");
 const notaDemonstracao = document.querySelector(".demo-note");
 
-const movimentacoes = carregarMovimentacoes();
+let movimentacoes = [];
 let movimentacaoEmEdicaoId = null;
 
 function formatarValor(valor) {
@@ -273,7 +273,7 @@ function exibirMovimentacoes() {
 }
 
 if (formularioCadastro) {
-    formularioCadastro.addEventListener("submit", (evento) => {
+    formularioCadastro.addEventListener("submit", async (evento) => {
         evento.preventDefault();
 
         const campos = new FormData(formularioCadastro);
@@ -282,7 +282,9 @@ if (formularioCadastro) {
             descricao: campos.get("descricao"),
             tipo: campos.get("tipo"),
             valor: Number(campos.get("valor")),
-            categoria: campos.get("categoria"),
+            categoriaId: campos.get("categoriaId"),
+            categoria: document.querySelector("#categoria-movimentacao")
+                .selectedOptions[0].textContent,
             data: campos.get("data"),
             formaPagamento: campos.get("formaPagamento")
         };
@@ -294,6 +296,27 @@ if (formularioCadastro) {
             mensagemFormulario.textContent = resultado.erros.join(" ");
             return;
         }
+
+        let movimentacaoSalva;
+
+        if (movimentacaoEmEdicaoId !== null) {
+            movimentacaoSalva = await atualizarMovimentacaoNoBanco(
+                movimentacaoEmEdicaoId,
+                resultado.movimentacao
+            );
+        } else {
+            movimentacaoSalva = await salvarMovimentacaoNoBanco(
+                resultado.movimentacao
+            );
+        }
+
+        if (!movimentacaoSalva) {
+            mensagemFormulario.textContent =
+                "Não foi possível salvar a movimentação no banco. Tente novamente.";
+            return;
+        }
+
+        resultado.movimentacao.id = movimentacaoSalva.id;
 
         let indiceMovimentacao = -1;
         let movimentacaoAnterior = null;
@@ -1037,6 +1060,8 @@ if (formularioLogin) {
             formularioLogin.reset();
             mostrarDashboard();
 
+            await preencherSelectCategorias();
+
         } catch (erro) {
             console.error("Erro durante o login:", erro);
 
@@ -1057,6 +1082,23 @@ async function verificarAutenticacao() {
 
         if (sessao) {
             mostrarDashboard();
+
+            await preencherSelectCategorias();
+
+            const dadosMovimentacoes = await carregarMovimentacoesDoBanco();
+
+            if (dadosMovimentacoes === null) {
+                console.error("Não foi possível carregar as movimentações.");
+                return;
+            }
+
+            movimentacoes = dadosMovimentacoes;
+
+            exibirMovimentacoes();
+            atualizarResumoFinanceiro();
+            atualizarGraficoDespesas();
+            atualizarGraficoMensal();
+            atualizarOrcamentos();
         } else {
             mostrarTelaLogin();
         }
