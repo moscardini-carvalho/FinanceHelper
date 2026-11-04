@@ -1731,3 +1731,276 @@ textarea:focus {
     border-radius: 20px;
     transition: width 0.3s ease;
 }
+
+/* PRELOADER */
+
+.preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    background: var(--page);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .45s ease, visibility .45s ease;
+}
+
+.preloader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.preloader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: preloaderEntrada .7s ease both;
+}
+
+.preloader-logo {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 18px;
+    border-radius: 20px;
+    background: var(--blue);
+    color: white;
+    font: 800 32px "Manrope", sans-serif;
+    box-shadow: 0 12px 30px #5267f244;
+}
+
+.preloader-content h1 {
+    margin: 0;
+    font: 800 23px "Manrope", sans-serif;
+    letter-spacing: -.8px;
+}
+
+.preloader-content h1 span {
+    color: var(--blue);
+}
+
+.preloader-track {
+    width: 150px;
+    height: 4px;
+    margin-top: 30px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--line);
+}
+
+.preloader-track span {
+    display: block;
+    width: 45%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--blue);
+    animation: carregarPreloader 1.2s ease-in-out infinite;
+}
+
+.preloader-content p {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+@keyframes carregarPreloader {
+    from {
+        transform: translateX(-110%);
+    }
+
+    to {
+        transform: translateX(340%);
+    }
+}
+
+@keyframes preloaderEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* TRANSIÇÃO DO DASHBOARD */
+
+.app-shell {
+    animation: dashboardEntrada .55s ease both;
+}
+
+@keyframes dashboardEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .preloader,
+    .preloader-content,
+    .preloader-track span,
+    .app-shell {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* =====================================
+   TELA DE LOGIN
+===================================== */
+
+#tela-login {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background:
+        radial-gradient(circle at 15% 15%, #5267f210, transparent 35%),
+        var(--page);
+}
+
+#tela-login[hidden] {
+    display: none !important;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 42px;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: 0 20px 70px rgba(20, 30, 60, .08);
+    animation: loginEntrada .7s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.login-header {
+    margin-bottom: 32px;
+}
+
+.login-header h1 {
+    margin: 0 0 12px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1.2px;
+}
+
+.login-header h1 span {
+    color: var(--blue);
+}
+
+.login-header p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#form-login {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#form-login label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#form-login input {
+    width: 100%;
+    min-height: 50px;
+    padding: 0 15px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: #fafbff;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+#form-login input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px #5267f218;
+}
+
+#form-login button {
+    min-height: 50px;
+    margin-top: 12px;
+    border: none;
+    border-radius: 11px;
+    background: var(--blue);
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+}
+
+#form-login button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px #5267f233;
+}
+
+#form-login button:disabled {
+    opacity: .65;
+    cursor: wait;
+    transform: none;
+}
+
+#mensagem-login {
+    min-height: 20px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+@keyframes loginEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(22px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+    #tela-login {
+        padding: 20px;
+    }
+
+    .login-container {
+        padding: 30px 23px;
+        border-radius: 20px;
+    }
+
+    .login-header h1 {
+        font-size: 25px;
+    }
+}
+
+/* TRANSIÇÃO DE SAÍDA DO LOGIN */
+#tela-login {
+    transition: opacity .25s ease, transform .25s ease;
+}
+
+#tela-login.login-saindo {
+    opacity: 0;
+    transform: translateY(-12px);
+    pointer-events: none;
+}

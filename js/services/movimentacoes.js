@@ -163,6 +163,34 @@ async function atualizarMovimentacaoNoBanco(id, movimentacao) {
     }
 }
 
+async function excluirMovimentacaoDoBanco(id) {
+    try {
+        const sessao = await obterSessao();
+
+        if (!sessao) {
+            console.error("Usuário não autenticado.");
+            return false;
+        }
+
+        const { error } = await supabaseClient
+            .from("transactions")
+            .delete()
+            .eq("id", id)
+            .eq("user_id", sessao.user.id);
+
+        if (error) {
+            console.error("Erro ao excluir movimentação:", error);
+            return false;
+        }
+
+        return true;
+
+    } catch (erro) {
+        console.error("Erro inesperado ao excluir movimentação:", erro);
+        return false;
+    }
+}
+
 async function carregarMovimentacoesDoBanco() {
     try {
         const { data, error } = await supabaseClient

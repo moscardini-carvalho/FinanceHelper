@@ -122,18 +122,38 @@ function editarMovimentacao(id) {
         return;
     }
 
+    formularioCadastro.reset();
+
     movimentacaoEmEdicaoId = movimentacao.id;
 
     formularioCadastro.elements["descricao"].value =
         movimentacao.descricao;
 
-    if (formulaformularioCadastro) {
-        formularioCadastro.reset();
-    }
+    formularioCadastro.elements["tipo"].value =
+        movimentacao.tipo;
+
+    formularioCadastro.elements["valor"].value =
+        movimentacao.valor;
+
+    formularioCadastro.elements["categoriaId"].value =
+        movimentacao.categoriaId;
+
+    formularioCadastro.elements["data"].value =
+        movimentacao.data;
+
+    formularioCadastro.elements["formaPagamento"].value =
+        movimentacao.formaPagamento;
 
     if (mensagemFormulario) {
         mensagemFormulario.textContent = "";
     }
+
+    formularioMovimentacao.hidden = false;
+
+    formularioMovimentacao.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
 }
 
 
@@ -969,7 +989,7 @@ if (formularioOrcamento) {
     });
 }
 
-function excluirMovimentacao(id) {
+async function excluirMovimentacao(id) {
     const indice = movimentacoes.findIndex(
         (movimentacao) => movimentacao.id === id
     );
@@ -988,19 +1008,16 @@ function excluirMovimentacao(id) {
         return;
     }
 
-    movimentacoes.splice(indice, 1);
+    const excluiu = await excluirMovimentacaoDoBanco(id);
 
-    const salvou = salvarMovimentacoes(movimentacoes);
-
-    if (!salvou) {
-        movimentacoes.splice(indice, 0, movimentacaoRemovida);
-
+    if (!excluiu) {
         alert(
             "Não foi possível excluir a movimentação. Tente novamente."
         );
-
         return;
     }
+
+    movimentacoes.splice(indice, 1);
 
     exibirMovimentacoes();
     atualizarResumoFinanceiro();
@@ -1020,6 +1037,18 @@ atualizarMetaEconomia();
 
 
 /* AUTENTICAÇÃO E CONTROLE DE ACESSO */
+
+const preloader = document.querySelector("#preloader");
+
+function esconderPreloader() {
+    if (!preloader) return;
+
+    preloader.classList.add("is-hidden");
+
+    setTimeout(() => {
+        preloader.hidden = true;
+    }, 500);
+}
 
 const telaLogin = document.querySelector("#tela-login");
 const appShell = document.querySelector(".app-shell");
@@ -1057,16 +1086,40 @@ if (formularioLogin) {
                 return;
             }
 
-            formularioLogin.reset();
-            mostrarDashboard();
+            mensagemLogin.textContent = "Carregando suas informações...";
 
             await preencherSelectCategorias();
+
+            const dadosMovimentacoes =
+                await carregarMovimentacoesDoBanco();
+
+            if (dadosMovimentacoes === null) {
+                throw new Error("Não foi possível carregar as movimentações.");
+            }
+
+            movimentacoes = dadosMovimentacoes;
+
+            exibirMovimentacoes();
+            atualizarResumoFinanceiro();
+            atualizarGraficoDespesas();
+            atualizarGraficoMensal();
+            atualizarOrcamentos();
+
+            formularioLogin.reset();
+
+            telaLogin.classList.add("login-saindo");
+
+            await new Promise((resolve) => setTimeout(resolve, 250));
+
+            mostrarDashboard();
+
+            telaLogin.classList.remove("login-saindo");
 
         } catch (erro) {
             console.error("Erro durante o login:", erro);
 
             mensagemLogin.textContent =
-                "Não foi possível realizar o login. Tente novamente.";
+                "Não foi possível carregar suas informações. Tente novamente.";
 
         } finally {
             botaoLogin.disabled = false;
@@ -1081,15 +1134,13 @@ async function verificarAutenticacao() {
         const sessao = await obterSessao();
 
         if (sessao) {
-            mostrarDashboard();
-
             await preencherSelectCategorias();
 
-            const dadosMovimentacoes = await carregarMovimentacoesDoBanco();
+            const dadosMovimentacoes =
+                await carregarMovimentacoesDoBanco();
 
             if (dadosMovimentacoes === null) {
-                console.error("Não foi possível carregar as movimentações.");
-                return;
+                throw new Error("Não foi possível carregar as movimentações.");
             }
 
             movimentacoes = dadosMovimentacoes;
@@ -1099,6 +1150,9 @@ async function verificarAutenticacao() {
             atualizarGraficoDespesas();
             atualizarGraficoMensal();
             atualizarOrcamentos();
+
+            mostrarDashboard();
+
         } else {
             mostrarTelaLogin();
         }
@@ -1106,6 +1160,9 @@ async function verificarAutenticacao() {
     } catch (erro) {
         console.error("Erro ao verificar autenticação:", erro);
         mostrarTelaLogin();
+
+    } finally {
+        esconderPreloader();
     }
 }
 
