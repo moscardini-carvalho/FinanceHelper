@@ -252,6 +252,48 @@
                 </article>
             </section>
 
+            <section class="panel transactions-panel" aria-labelledby="transactions-title">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-kicker">ATIVIDADE RECENTE</p>
+                        <h2 id="transactions-title">Movimentações recentes</h2>
+                    </div>
+
+                    <button class="text-button" id="botao-ver-tudo" type="button" aria-expanded="false">
+                        Ver tudo <span aria-hidden="true">→</span>
+                    </button>
+                </div>
+
+                <!-- Resumo compacto das movimentações -->
+                <div class="transactions-summary" id="resumo-movimentacoes">
+                    <div id="lista-resumo-movimentacoes">
+                        <!-- O JavaScript preencherá as 3 movimentações mais recentes -->
+                    </div>
+
+                    <div class="transactions-more" id="mais-movimentacoes" aria-hidden="true" hidden>
+                        •••
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Categoria</th>
+                                <th>Data</th>
+                                <th>Forma</th>
+                                <th class="amount-heading">Valor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="lista-movimentacoes">
+                            <!-- O JavaScript preencherá as movimentações -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
             <section class="analytics-grid" aria-label="Análises demonstrativas">
                 <article class="panel spending-panel">
@@ -327,115 +369,122 @@
                 </article>
             </section>
 
-            <section class="panel budgets-panel" aria-labelledby="budgets-title">
-                <div class="panel-header">
-                    <div>
-                        <p class="panel-kicker">PLANEJAMENTO FINANCEIRO</p>
-                        <h2 id="budgets-title">Orçamento mensal por categoria</h2>
-                    </div>
-                    <span class="budget-month" id="mes-orcamento"></span>
+            <!-- Acesso ao planejamento financeiro -->
+            <section class="planning-entry" aria-labelledby="planning-title">
+                <div>
+                    <p class="panel-kicker">ORGANIZE SEU DINHEIRO</p>
+                    <h2 id="planning-title">Planejamento financeiro</h2>
+                    <p class="page-subtitle">Defina limites para suas despesas e acompanhe sua meta de economia.</p>
                 </div>
 
-                <form id="form-orcamento" class="budget-form">
-                    <label class="form-field">
-                        Categoria
-                        <input type="text" name="categoria" required maxlength="50" placeholder="Ex.: Alimentação">
-                    </label>
-                    <label class="form-field">
-                        Limite mensal (R$)
-                        <input type="number" name="limite" required min="0.01" step="0.01" placeholder="Ex.: 500,00">
-                    </label>
-                    <button class="primary-button" type="submit">Salvar orçamento</button>
-                </form>
-
-                <p id="mensagem-orcamento" class="budget-message" role="status" aria-live="polite"></p>
-                <div id="lista-orcamentos" class="budget-list">
-                    <p class="budget-empty">Nenhum orçamento cadastrado. Defina um limite para começar.</p>
-                </div>
+                <button class="primary-button" id="botao-planejamento" type="button" aria-haspopup="dialog"
+                    aria-controls="popup-planejamento">
+                    Planejamento financeiro
+                </button>
             </section>
 
-            <section class="panel savings-panel" aria-labelledby="savings-title">
-                <div class="panel-header">
-                    <div>
-                        <p class="panel-kicker">PLANEJAMENTO FINANCEIRO</p>
-                        <h2 id="savings-title">Meta de economia mensal</h2>
+            <!-- Metas e orçamentos cadastrados ficam visíveis no dashboard -->
+            <section class="planning-goals" aria-label="Metas financeiras cadastradas">
+                <section class="panel budgets-panel" aria-labelledby="budgets-title">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-kicker">ORÇAMENTO</p>
+                            <h2 id="budgets-title">Orçamento mensal por categoria</h2>
+                        </div>
+                        <span class="budget-month" id="mes-orcamento"></span>
                     </div>
-                    <span id="mes-meta-economia" class="budget-month"></span>
-                </div>
 
-                <form id="form-meta-economia" class="budget-form">
-                    <label class="form-field">
-                        Quanto deseja economizar? (R$)
-                        <input type="number" name="meta" required min="0.01" step="0.01" placeholder="Ex.: 300,00">
-                    </label>
+                    <div id="lista-orcamentos" class="budget-list">
+                        <p class="budget-empty">Nenhum orçamento cadastrado. Defina um limite para começar.</p>
+                    </div>
+                </section>
 
-                    <button class="primary-button" type="submit">
-                        Salvar meta
+                <section class="panel savings-panel" aria-labelledby="savings-title">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-kicker">ECONOMIA</p>
+                            <h2 id="savings-title">Meta de economia mensal</h2>
+                        </div>
+                        <span id="mes-meta-economia" class="budget-month"></span>
+                    </div>
+
+                    <div id="progresso-meta-economia" class="savings-progress">
+                        <p>Defina uma meta para acompanhar seu progresso.</p>
+                    </div>
+
+                    <button type="button" id="editar-meta-economia" class="editar-meta-economia">
+                        Editar meta
                     </button>
-                </form>
-
-                <p id="mensagem-meta-economia" class="budget-message" role="status" aria-live="polite"></p>
-
-                <div id="progresso-meta-economia" class="savings-progress">
-                    <p>Defina uma meta para acompanhar seu progresso.</p>
-                </div>
+                </section>
             </section>
 
-            <section class="panel transactions-panel" aria-labelledby="transactions-title">
-                <div class="panel-header">
-                    <div>
-                        <p class="panel-kicker">ATIVIDADE RECENTE</p>
-                        <h2 id="transactions-title">Movimentações recentes</h2>
+            <!-- Popup de criação/edição do planejamento -->
+            <dialog class="planning-dialog" id="popup-planejamento" aria-labelledby="popup-planejamento-title">
+                <div class="planning-dialog-content">
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-kicker">ORGANIZAÇÃO FINANCEIRA</p>
+                            <h2 id="popup-planejamento-title">Configure seu planejamento</h2>
+                        </div>
+                        <button class="text-button" id="fechar-planejamento" type="button"
+                            aria-label="Fechar planejamento">✕</button>
                     </div>
-                    <button class="text-button" type="button" disabled>Ver todas <span
-                            aria-hidden="true">→</span></button>
+
+                    <section class="panel budgets-panel" aria-labelledby="budgets-form-title">
+                        <div class="panel-header">
+                            <div>
+                                <p class="panel-kicker">ORÇAMENTO</p>
+                                <h2 id="budgets-form-title">Orçamento mensal por categoria</h2>
+                            </div>
+                            <span class="budget-month" id="mes-orcamento-form"></span>
+                        </div>
+
+                        <form id="form-orcamento" class="budget-form">
+                            <label class="form-field">
+                                Categoria
+                                <input type="text" name="categoria" required maxlength="50"
+                                    placeholder="Ex.: Alimentação">
+                            </label>
+                            <label class="form-field">
+                                Limite mensal (R$)
+                                <input type="number" name="limite" required min="0.01" step="0.01"
+                                    placeholder="Ex.: 500,00">
+                            </label>
+                            <button class="primary-button" type="submit">Salvar orçamento</button>
+                        </form>
+
+                        <p id="mensagem-orcamento" class="budget-message" role="status" aria-live="polite"></p>
+                    </section>
+
+                    <section class="panel savings-panel" aria-labelledby="savings-form-title">
+                        <div class="panel-header">
+                            <div>
+                                <p class="panel-kicker">ECONOMIA</p>
+                                <h2 id="savings-form-title">Meta de economia mensal</h2>
+                            </div>
+                            <span id="mes-meta-economia-form" class="budget-month"></span>
+                        </div>
+
+                        <form id="form-meta-economia" class="budget-form">
+                            <label class="form-field">
+                                Quanto deseja economizar? (R$)
+                                <input type="number" name="meta" required min="0.01" step="0.01"
+                                    placeholder="Ex.: 300,00">
+                            </label>
+                            <button class="primary-button" type="submit">Salvar meta</button>
+                        </form>
+
+                        <p id="mensagem-meta-economia" class="budget-message" role="status" aria-live="polite"></p>
+                    </section>
+
+                    <div class="form-actions">
+                        <button class="text-button" id="concluir-planejamento" type="button">Concluído</button>
+                    </div>
                 </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Descrição</th>
-                                <th>Categoria</th>
-                                <th>Data</th>
-                                <th>Forma</th>
-                                <th class="amount-heading">Valor</th>
-                            </tr>
-                            <th>Ações</th>
-                        </thead>
-                        <tbody id="lista-movimentacoes">
-                            <tr>
-                                <td><span class="transaction-symbol food">⌁</span><span
-                                        class="transaction-title">Mercado e almoço</span></td>
-                                <td><span class="category-tag">Alimentação</span></td>
-                                <td>24 out, 2026</td>
-                                <td>Pix</td>
-                                <td class="amount negative">− R$ 85,00</td>
-                            </tr>
-                            <tr>
-                                <td><span class="transaction-symbol salary">↙</span><span
-                                        class="transaction-title">Salário</span></td>
-                                <td><span class="category-tag">Renda</span></td>
-                                <td>20 out, 2026</td>
-                                <td>Conta bancária</td>
-                                <td class="amount positive-text">+ R$ 2.500,00</td>
-                            </tr>
-                            <tr>
-                                <td><span class="transaction-symbol transport">↗</span><span
-                                        class="transaction-title">Transporte</span></td>
-                                <td><span class="category-tag">Transporte</span></td>
-                                <td>18 out, 2026</td>
-                                <td>Cartão</td>
-                                <td class="amount negative">− R$ 45,00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p class="demo-note"><span aria-hidden="true">ⓘ</span> Todas as movimentações exibidas são exemplos
-                    fictícios.</p>
-            </section>
+            </dialog>
 
             <footer class="page-footer"><span>Meu Financeiro <span class="footer-dot">•</span> Projeto em
-                    desenvolvimento</span><span>Seus dados financeiros ainda não são armazenados.</span></footer>
+                    desenvolvimento</span><span>Organize suas finanças em um só lugar.</span></footer>
         </main>
     </div>
     <div class="mobile-overlay" id="mobile-overlay" hidden></div>

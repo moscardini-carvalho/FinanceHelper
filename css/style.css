@@ -927,7 +927,7 @@ td:first-child {
     }
 
     .analytics-grid {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .spending-content {
@@ -2004,3 +2004,538 @@ textarea:focus {
     transform: translateY(-12px);
     pointer-events: none;
 }
+
+/* =====================================================
+   MOBILE: RESUMO FINANCEIRO
+   ===================================================== */
+
+@media (max-width: 760px) {
+    .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .balance-card {
+        grid-column: 1 / -1;
+    }
+
+    .summary-card {
+        min-width: 0;
+        min-height: 125px;
+        padding: 15px 13px;
+    }
+
+    .metric-value {
+        font-size: 21px;
+    }
+
+    .card-label {
+        font-size: 11px;
+    }
+
+    .metric-foot {
+        flex-wrap: wrap;
+        gap: 4px;
+        font-size: 10px;
+    }
+}
+
+/* =====================================================
+   MOBILE: GRÁFICOS E ANÁLISES
+   ===================================================== */
+
+@media (max-width: 760px) {
+
+    .analytics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .panel {
+        min-width: 0;
+        padding: 20px 16px;
+    }
+
+    /* GRÁFICO DE DESPESAS */
+
+    .spending-content {
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .donut-wrap {
+        flex: 0 0 135px;
+    }
+
+    .donut-chart {
+        width: 135px;
+    }
+
+    .donut-center strong {
+        font-size: 15px;
+    }
+
+    .legend-list {
+        gap: 15px;
+    }
+
+    .legend-name,
+    .legend-item strong {
+        font-size: 10px;
+    }
+
+    /* GRÁFICO MENSAL */
+
+    .cashflow-panel {
+        overflow: hidden;
+    }
+
+    .bar-chart {
+        width: 100%;
+        height: 190px;
+    }
+
+    .chart-y-labels {
+        padding-right: 8px;
+        font-size: 9px;
+    }
+
+    .chart-plot {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .chart-months {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 390px) {
+
+    .spending-content {
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .donut-wrap {
+        width: 155px;
+        flex: 0 0 auto;
+    }
+
+    .donut-chart {
+        width: 155px;
+    }
+
+    .legend-list {
+        width: 100%;
+        padding: 0 8px;
+    }
+
+    .cashflow-panel .panel-header {
+        align-items: flex-start;
+    }
+
+    .chart-legend {
+        flex-wrap: wrap;
+    }
+
+    .bar-chart {
+        height: 175px;
+    }
+}
+
+
+/* MOBILE: MOVIMENTAÇÕES EM CARTÕES */
+@media (max-width: 760px) {
+    .transactions-panel {
+        min-width: 0;
+    }
+
+    .transactions-panel .panel-header {
+        gap: 10px;
+    }
+
+    .transactions-panel .table-wrap {
+        overflow: visible;
+    }
+
+    .transactions-panel table,
+    .transactions-panel tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .transactions-panel thead {
+        display: none;
+    }
+
+    .transactions-panel tbody tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 12px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .transactions-panel tbody td {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        min-width: 0;
+        padding: 0;
+        border: none;
+        font-size: 12px;
+    }
+
+    .transactions-panel tbody td::before {
+        content: attr(data-label);
+        color: var(--text-muted, #888);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .transactions-panel tbody td:first-child {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .transactions-panel tbody td:first-child::before {
+        display: none;
+    }
+
+    .transactions-panel .transaction-title {
+        font-size: 13px;
+    }
+
+    .transactions-panel tbody td:last-child {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 16px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .transactions-panel tbody td:last-child::before {
+        display: none;
+    }
+}
+
+
+/* MOBILE: FORMULÁRIO DE MOVIMENTAÇÕES */
+@media (max-width: 760px) {
+    #form-movimentacao {
+        width: 100%;
+    }
+
+    #form-movimentacao .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    #form-movimentacao .form-field {
+        width: 100%;
+        min-width: 0;
+        gap: 8px;
+        font-size: 13px;
+    }
+
+    #form-movimentacao .form-field input,
+    #form-movimentacao .form-field select {
+        width: 100%;
+        min-height: 46px;
+        font-size: 16px;
+    }
+
+    #form-movimentacao .form-actions {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    #form-movimentacao .form-actions button {
+        width: 100%;
+        min-height: 48px;
+    }
+}
+
+
+
+/* =====================================================
+   AJUSTES INTEGRADOS: MOVIMENTAÇÕES E PLANEJAMENTO
+   ===================================================== */
+
+/* Movimentações: desktop mantém a tabela e esconde o resumo compacto */
+.transactions-summary {
+    display: none;
+}
+
+#botao-ver-tudo {
+    display: none;
+}
+
+/* Área de acesso ao planejamento */
+.planning-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 18px;
+    padding: 22px 24px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.planning-entry .page-subtitle {
+    line-height: 1.6;
+}
+
+.planning-goals {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 17px;
+    margin-top: 17px;
+}
+
+.planning-goals > .panel {
+    min-width: 0;
+    margin-top: 0;
+}
+
+.budget-list,
+.savings-progress {
+    min-width: 0;
+    margin-top: 18px;
+}
+
+.budget-form {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.form-field {
+    display: grid;
+    gap: 7px;
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.form-field input,
+.form-field select {
+    width: 100%;
+    min-width: 0;
+    min-height: 43px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+    outline: 2px solid #a9b2ff;
+    outline-offset: 1px;
+}
+
+.budget-message {
+    min-height: 0;
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.budget-empty {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Popup nativo de planejamento */
+.planning-dialog {
+    width: min(680px, calc(100% - 32px));
+    max-width: 680px;
+    max-height: min(88vh, 900px);
+    padding: 0;
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--page);
+    color: var(--ink);
+    box-shadow: 0 24px 80px #20243a35;
+}
+
+.planning-dialog::backdrop {
+    background: #171a2b80;
+    backdrop-filter: blur(3px);
+}
+
+.planning-dialog-content {
+    display: grid;
+    gap: 16px;
+    padding: 22px;
+}
+
+.planning-dialog-content > .panel {
+    padding: 19px;
+}
+
+.planning-dialog .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 2px;
+}
+
+.planning-dialog .text-button {
+    cursor: pointer;
+}
+
+/* Responsividade */
+@media (max-width: 760px) {
+    /* Resumo compacto de movimentações */
+    #botao-ver-tudo {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+    }
+
+    .transactions-panel .table-wrap {
+        display: none;
+        overflow: visible;
+    }
+
+    .transactions-summary {
+        display: block;
+        margin-top: 12px;
+    }
+
+    .summary-transaction {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .summary-transaction-description {
+        min-width: 0;
+        overflow: hidden;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 600;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .summary-transaction-type {
+        color: var(--muted);
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .summary-transaction-value {
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .transactions-more {
+        display: flex;
+        justify-content: center;
+        padding: 10px 0 0;
+        color: var(--muted);
+        font-size: 18px;
+        letter-spacing: 4px;
+    }
+
+    .transactions-more[hidden] {
+        display: none;
+    }
+
+    .transactions-panel.show-all .transactions-summary {
+        display: none;
+    }
+
+    .transactions-panel.show-all .table-wrap {
+        display: block;
+        margin-top: 14px;
+    }
+
+    /* A seção detalhada continua usando o formato de cartões já existente */
+    .transactions-panel.show-all table {
+        margin-top: 0;
+    }
+
+    /* Planejamento */
+    .planning-entry {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 14px;
+        padding: 19px 16px;
+    }
+
+    .planning-entry .primary-button {
+        width: 100%;
+        min-height: 47px;
+    }
+
+    .planning-goals {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 13px;
+    }
+
+    .planning-dialog {
+        width: calc(100% - 20px);
+        max-height: 90vh;
+        border-radius: 16px;
+    }
+
+    .planning-dialog-content {
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .planning-dialog-content > .panel {
+        padding: 16px 13px;
+    }
+}
+
+@media (max-width: 390px) {
+    /* Em telas muito estreitas, os gráficos ficam empilhados para manter leitura */
+    .analytics-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (min-width: 761px) {
+    .planning-entry {
+        min-height: 120px;
+    }
+}
+
+
+/* Melhor organização dos gráficos em telas menores */
+@media (max-width: 760px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .analytics-grid > * {
+        min-width: 0;
+    }
+}
+

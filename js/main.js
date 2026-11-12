@@ -61,6 +61,8 @@ const botaoNovaMovimentacao = document.querySelector("#nova-movimentacao");
 const formularioMovimentacao = document.querySelector("#formulario-movimentacao");
 const botaoCancelarMovimentacao = document.querySelector("#cancelar-movimentacao");
 const campoData = document.querySelector('#form-movimentacao [name="data"]');
+const painelMovimentacoes = document.querySelector(".transactions-panel");
+const botaoVerTudo = document.querySelector("#botao-ver-tudo");
 
 function abrirFormulario() {
     if (!formularioMovimentacao) return;
@@ -171,6 +173,8 @@ if (botaoCancelarMovimentacao) {
 const formularioCadastro = document.querySelector("#form-movimentacao");
 const mensagemFormulario = document.querySelector("#mensagem-formulario");
 const listaMovimentacoes = document.querySelector("#lista-movimentacoes");
+const listaResumoMovimentacoes = document.querySelector("#lista-resumo-movimentacoes");
+const maisMovimentacoes = document.querySelector("#mais-movimentacoes");
 const notaDemonstracao = document.querySelector(".demo-note");
 
 let movimentacoes = [];
@@ -193,103 +197,192 @@ function formatarData(data) {
     });
 }
 
+
 function exibirMovimentacoes() {
     if (!listaMovimentacoes) return;
 
+    // Limpa a tabela e organiza as movimentações
     listaMovimentacoes.replaceChildren();
 
-    movimentacoes
+    const movimentacoesOrdenadas = movimentacoes
         .slice()
-        .sort((a, b) => b.data.localeCompare(a.data))
-        .forEach((movimentacao) => {
-            const linha = document.createElement("tr");
+        .sort((a, b) => b.data.localeCompare(a.data));
 
-            const celulaDescricao = document.createElement("td");
-            const simbolo = document.createElement("span");
-            const titulo = document.createElement("span");
+    // ==========================================
+    // 1. ATUALIZA O RESUMO COMPACTO
+    // ==========================================
 
-            simbolo.className = `transaction-symbol ${movimentacao.tipo === "receita" ? "salary" : "food"
-                }`;
-            simbolo.textContent =
-                movimentacao.tipo === "receita" ? "↙" : "⌁";
+    if (listaResumoMovimentacoes) {
+        listaResumoMovimentacoes.replaceChildren();
 
-            titulo.className = "transaction-title";
-            titulo.textContent = movimentacao.descricao;
+        movimentacoesOrdenadas.slice(0, 3).forEach((movimentacao) => {
+            const linha = document.createElement("div");
+            linha.className = "summary-transaction";
 
-            celulaDescricao.append(simbolo, titulo);
+            // Descrição
+            const descricao = document.createElement("span");
+            descricao.className = "summary-transaction-description";
+            descricao.textContent = movimentacao.descricao;
 
-            const celulaCategoria = document.createElement("td");
-            const categoria = document.createElement("span");
-            categoria.className = "category-tag";
-            categoria.textContent = movimentacao.categoria;
-            celulaCategoria.appendChild(categoria);
+            // Tipo: Receita ou Despesa
+            const tipo = document.createElement("span");
+            tipo.className = "summary-transaction-type";
+            tipo.textContent =
+                movimentacao.tipo === "receita" ? "Receita" : "Despesa";
 
-            const celulaData = document.createElement("td");
-            celulaData.textContent = formatarData(movimentacao.data);
-
-            const celulaForma = document.createElement("td");
-            celulaForma.textContent = movimentacao.formaPagamento;
-
-            const celulaValor = document.createElement("td");
-            celulaValor.className = movimentacao.tipo === "receita"
-                ? "amount positive-text"
-                : "amount negative";
+            // Valor
+            const valor = document.createElement("span");
+            valor.className = movimentacao.tipo === "receita"
+                ? "summary-transaction-value positive-text"
+                : "summary-transaction-value negative";
 
             const sinal = movimentacao.tipo === "receita" ? "+" : "−";
-            celulaValor.textContent =
-                `${sinal} ${formatarValor(movimentacao.valor)}`;
+            valor.textContent = `${sinal} ${formatarValor(movimentacao.valor)}`;
 
+            // Adiciona os elementos à linha
+            linha.append(descricao, tipo, valor);
 
+            // Adiciona a linha ao resumo
+            listaResumoMovimentacoes.appendChild(linha);
+        });
+    }
 
-            const celulaAcoes = document.createElement("td");
+    // ==========================================
+    // 2. CONTROLA OS TRÊS PONTINHOS
+    // ==========================================
 
-            // Botão Editar
-            const botaoEditar = document.createElement("button");
-            botaoEditar.type = "button";
-            botaoEditar.className = "text-button";
-            botaoEditar.textContent = "Editar";
-            botaoEditar.setAttribute(
-                "aria-label",
-                `Editar movimentação ${movimentacao.descricao}`
-            );
+    if (maisMovimentacoes) {
+        maisMovimentacoes.hidden = movimentacoesOrdenadas.length <= 3;
+    }
 
-            // Botão Excluir
-            const botaoExcluir = document.createElement("button");
-            botaoExcluir.type = "button";
-            botaoExcluir.className = "text-button";
-            botaoExcluir.textContent = "Excluir";
-            botaoExcluir.setAttribute(
-                "aria-label",
-                `Excluir movimentação ${movimentacao.descricao}`
-            );
+    // ==========================================
+    // 3. ATUALIZA A TABELA DETALHADA
+    // ==========================================
 
-            botaoEditar.addEventListener("click", () => {
-                editarMovimentacao(movimentacao.id);
-            });
+    movimentacoesOrdenadas.forEach((movimentacao) => {
+        const linha = document.createElement("tr");
 
-            botaoExcluir.addEventListener("click", () => {
-                excluirMovimentacao(movimentacao.id);
-            });
+        const celulaDescricao = document.createElement("td");
+        celulaDescricao.setAttribute("data-label", "Descrição");
 
-            celulaAcoes.append(botaoEditar, botaoExcluir);
+        const simbolo = document.createElement("span");
+        const titulo = document.createElement("span");
 
+        simbolo.className = `transaction-symbol ${movimentacao.tipo === "receita" ? "salary" : "food"
+            }`;
 
-            linha.append(
-                celulaDescricao,
-                celulaCategoria,
-                celulaData,
-                celulaForma,
-                celulaValor,
-                celulaAcoes
-            );
+        simbolo.textContent =
+            movimentacao.tipo === "receita" ? "↙" : "⌁";
 
-            listaMovimentacoes.appendChild(linha);
+        titulo.className = "transaction-title";
+        titulo.textContent = movimentacao.descricao;
 
+        celulaDescricao.append(simbolo, titulo);
+
+        const celulaCategoria = document.createElement("td");
+        celulaCategoria.setAttribute("data-label", "Categoria");
+
+        const categoria = document.createElement("span");
+        categoria.className = "category-tag";
+        categoria.textContent = movimentacao.categoria;
+
+        celulaCategoria.appendChild(categoria);
+
+        const celulaData = document.createElement("td");
+        celulaData.setAttribute("data-label", "Data");
+        celulaData.textContent = formatarData(movimentacao.data);
+
+        const celulaForma = document.createElement("td");
+        celulaForma.setAttribute("data-label", "Forma");
+        celulaForma.textContent = movimentacao.formaPagamento;
+
+        const celulaValor = document.createElement("td");
+        celulaValor.setAttribute("data-label", "Valor");
+
+        celulaValor.className = movimentacao.tipo === "receita"
+            ? "amount positive-text"
+            : "amount negative";
+
+        const sinal = movimentacao.tipo === "receita" ? "+" : "−";
+
+        celulaValor.textContent =
+            `${sinal} ${formatarValor(movimentacao.valor)}`;
+
+        const celulaAcoes = document.createElement("td");
+        celulaAcoes.setAttribute("data-label", "Ações");
+
+        // Botão Editar
+        const botaoEditar = document.createElement("button");
+        botaoEditar.type = "button";
+        botaoEditar.className = "text-button";
+        botaoEditar.textContent = "Editar";
+
+        botaoEditar.setAttribute(
+            "aria-label",
+            `Editar movimentação ${movimentacao.descricao}`
+        );
+
+        // Botão Excluir
+        const botaoExcluir = document.createElement("button");
+        botaoExcluir.type = "button";
+        botaoExcluir.className = "text-button";
+        botaoExcluir.textContent = "Excluir";
+
+        botaoExcluir.setAttribute(
+            "aria-label",
+            `Excluir movimentação ${movimentacao.descricao}`
+        );
+
+        // Eventos dos botões
+        botaoEditar.addEventListener("click", () => {
+            editarMovimentacao(movimentacao.id);
         });
 
+        botaoExcluir.addEventListener("click", () => {
+            excluirMovimentacao(movimentacao.id);
+        });
+
+        celulaAcoes.append(botaoEditar, botaoExcluir);
+
+        // Monta a linha da tabela
+        linha.append(
+            celulaDescricao,
+            celulaCategoria,
+            celulaData,
+            celulaForma,
+            celulaValor,
+            celulaAcoes
+        );
+
+        listaMovimentacoes.appendChild(linha);
+    });
+
+    // Oculta a nota de demonstração
     if (notaDemonstracao) {
         notaDemonstracao.hidden = true;
     }
+}
+
+if (painelMovimentacoes && botaoVerTudo) {
+    botaoVerTudo.addEventListener("click", () => {
+
+        const mostrandoTudo = painelMovimentacoes.classList.toggle("show-all");
+
+        botaoVerTudo.setAttribute("aria-expanded", mostrandoTudo);
+
+        // Atualiza o texto e a seta do botão
+        botaoVerTudo.replaceChildren();
+
+        const texto = document.createTextNode(
+            mostrandoTudo ? "Voltar ao resumo " : "Ver tudo "
+        );
+
+        const seta = document.createElement("span");
+        seta.setAttribute("aria-hidden", "true");
+        seta.textContent = mostrandoTudo ? "←" : "→";
+
+        botaoVerTudo.append(texto, seta);
+    });
 }
 
 if (formularioCadastro) {
@@ -1193,5 +1286,89 @@ if (botaoLogout) {
             botaoLogout.disabled = false;
             botaoLogout.textContent = "Sair";
         }
+    });
+}
+
+
+/* CONTROLE DO POPUP DE PLANEJAMENTO */
+
+const botaoPlanejamento = document.querySelector("#botao-planejamento");
+const popupPlanejamento = document.querySelector("#popup-planejamento");
+const botaoFecharPlanejamento = document.querySelector("#fechar-planejamento");
+const botaoConcluirPlanejamento = document.querySelector("#concluir-planejamento");
+
+function abrirPlanejamento() {
+    if (!popupPlanejamento) return;
+
+    popupPlanejamento.showModal();
+}
+
+function fecharPlanejamento() {
+    if (!popupPlanejamento) return;
+
+    popupPlanejamento.close();
+}
+
+if (botaoPlanejamento) {
+    botaoPlanejamento.addEventListener("click", abrirPlanejamento);
+}
+
+if (botaoFecharPlanejamento) {
+    botaoFecharPlanejamento.addEventListener("click", fecharPlanejamento);
+}
+
+if (botaoConcluirPlanejamento) {
+    botaoConcluirPlanejamento.addEventListener("click", fecharPlanejamento);
+}
+
+// Fecha o popup ao clicar fora do conteúdo
+if (popupPlanejamento) {
+    popupPlanejamento.addEventListener("click", (evento) => {
+        if (evento.target === popupPlanejamento) {
+            fecharPlanejamento();
+        }
+    });
+}
+
+/* SINCRONIZAÇÃO DOS CAMPOS DE MÊS DO PLANEJAMENTO */
+
+const mesOrcamentoForm = document.querySelector("#mes-orcamento-form");
+const mesMetaEconomiaDashboard = document.querySelector("#mes-meta-economia");
+const mesMetaEconomiaForm = document.querySelector("#mes-meta-economia-form");
+
+// Sincroniza os campos ao abrir o popup
+if (botaoPlanejamento) {
+    botaoPlanejamento.addEventListener("click", () => {
+        if (mesOrcamento && mesOrcamentoForm) {
+            mesOrcamentoForm.value = mesOrcamento.value;
+        }
+
+        if (mesMetaEconomiaDashboard && mesMetaEconomiaForm) {
+            mesMetaEconomiaForm.value = mesMetaEconomiaDashboard.value;
+        }
+    });
+}
+
+// Sincroniza o orçamento nos dois campos
+if (mesOrcamento && mesOrcamentoForm) {
+    mesOrcamentoForm.addEventListener("change", () => {
+        mesOrcamento.value = mesOrcamentoForm.value;
+        mesOrcamento.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+
+    mesOrcamento.addEventListener("change", () => {
+        mesOrcamentoForm.value = mesOrcamento.value;
+    });
+}
+
+// Sincroniza a meta de economia nos dois campos
+if (mesMetaEconomiaDashboard && mesMetaEconomiaForm) {
+    mesMetaEconomiaForm.addEventListener("change", () => {
+        mesMetaEconomiaDashboard.value = mesMetaEconomiaForm.value;
+        mesMetaEconomiaDashboard.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+
+    mesMetaEconomiaDashboard.addEventListener("change", () => {
+        mesMetaEconomiaForm.value = mesMetaEconomiaDashboard.value;
     });
 }
